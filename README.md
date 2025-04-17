@@ -38,7 +38,7 @@ Once connected, you'll see live updates and historical data for all your connect
 - Frontend: HTML, CSS, JavaScript
 - Backend: PHP (Lightweight & Secure)
 - Database: MySQL
-- Hosting: Self-hosted on OVH with full control
+- Hosting: Self-hosted with full control
 
 ---
 
