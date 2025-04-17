@@ -23,7 +23,7 @@ Birdo doesn’t just collect data — it turns it into useful reports and alerts
 ## 🚀 Getting Started
 
 ### 1. Create an Account
-Sign up at [https://dashboard.birdo.uk/register](https://dashboard.birdo.uk/auth/signup)
+Sign up at [https://dashboard.birdo.uk/auth/register](https://dashboard.birdo.uk/auth/signup)
 
 ### 2. Install SDK (Coming Soon)
 SDKs for multiple languages will be available shortly.
