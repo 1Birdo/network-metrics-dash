@@ -63,7 +63,7 @@ Birdo is built with security in mind:
 ## 📬 Contact
 
 For support or inquiries, reach out via:
-- 📧 Email: contact@birdo.uk
+- 📧 Email: admin@birdo.uk
 - 🌐 Website: [https://birdo.uk](https://birdo.uk)
 
 ---
