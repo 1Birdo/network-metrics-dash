@@ -3,7 +3,7 @@
 Welcome to the official Birdo Dashboard – a modern SaaS solution for real-time server and network monitoring. Designed with developers and IT teams in mind, Birdo provides actionable insights through custom SDK integrations, helping you stay ahead of performance issues.
 
 ## 🌐 Live Demo
-Check out the live dashboard here: [https://dashboard.birdo.uk](https://dashboard.birdo.uk)
+Check out the live dashboard here: [dashboard.birdo.uk](https://dashboard.birdo.uk)
 
 ---
 
