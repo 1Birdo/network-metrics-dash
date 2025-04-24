@@ -1,71 +1,32 @@
-# Birdo Dashboard - Real-Time Server Monitoring
+# 🚀 Birdo - Real-Time Server & Network Monitoring
 
-Welcome to the official Birdo Dashboard – a modern SaaS solution for real-time server and network monitoring. Designed with developers and IT teams in mind, Birdo provides actionable insights through custom SDK integrations, helping you stay ahead of performance issues.
+![Birdo Dashboard Preview](https://via.placeholder.com/800x400.png?text=Birdo+Dashboard+Preview) <!-- Replace with actual screenshot -->
 
-## 🌐 Live Demo
-Check out the live dashboard here: [dashboard.birdo.uk](https://dashboard.birdo.uk)
+**Professional-grade monitoring made simple** - Birdo provides developers and IT teams with real-time insights into server performance, network health, and application metrics through an intuitive dashboard and powerful SDK integrations.
 
----
+## 🌟 Key Features
 
-## ✨ Features
+### 📊 Comprehensive Monitoring
+- **Real-time metrics**: CPU, memory, disk, network, and process monitoring
+- **Custom dashboards**: Build views tailored to your infrastructure
+- **Historical data**: Track performance trends over time
 
-### 📊 Real-Time Monitoring
-Track network and server performance metrics in real-time. Whether you're monitoring latency, uptime, or packet loss, Birdo gives you up-to-the-second feedback.
+### ⚡ Smart Alerting
+- **Threshold-based alerts**: Get notified before issues impact users
+- **Multi-channel notifications**: Email, webhook, and SMS (premium)
+- **Anomaly detection**: AI-powered unusual pattern detection
 
-### ⚙️ Custom SDK Support
-Easily integrate Birdo into your infrastructure with our flexible SDK options. Whether it's Python, Node.js, or Bash scripts — plug in your existing systems with minimal setup.
+### 🔌 Easy Integration
+- **Lightweight agents**: Minimal resource footprint
+- **Multi-language SDKs**: Python, Node.js, Go, and Bash support
+- **API access**: Full REST API for custom integrations
 
-### 🔍 Actionable Insights
-Birdo doesn’t just collect data — it turns it into useful reports and alerts. Automatically detect anomalies, downtime, or performance degradation and receive alerts before your users do.
+## 🏁 Getting Started
 
----
+### 1️⃣ Sign Up for Free
+[![Register Now](https://img.shields.io/badge/Register-Free_Account-blue?style=for-the-badge&logo=google-chrome)](https://dashboard.birdo.uk/auth/signup)
 
-## 🚀 Getting Started
-
-### 1. Create an Account
-Sign up at [dashboard.birdo.uk/auth/register](https://dashboard.birdo.uk/auth/signup)
-
-### 2. Install SDK (Coming Soon)
-SDKs for multiple languages will be available shortly.
-
-### 3. Monitor Your Systems
-Once connected, you'll see live updates and historical data for all your connected services.
-
----
-
-## 📦 Technologies Used
-
-- Frontend: HTML, CSS, JavaScript
-- Backend: PHP (Lightweight & Secure)
-- Database: MySQL
-- Hosting: Self-hosted with full control
-
----
-
-## 📢 Roadmap
-
-- [ ] SDK Releases (Python, Node.js, Bash)
-- [ ] Public API for Integration
-- [ ] Alert Customization (Email / Webhook)
-- [ ] Mobile Dashboard Access
-
----
-
-## 🛡️ Security & Privacy
-
-Birdo is built with security in mind:
-- TLS encryption enabled
-- No third-party data sharing
-- GDPR-friendly design
-
----
-
-## 📬 Contact
-
-For support or inquiries, reach out via:
-- 📧 Email: admin@birdo.uk
-- 🌐 Website: [https://birdo.uk](https://birdo.uk)
-
----
-
-> Stay in control. Stay informed. Use **Birdo Dashboard** to keep your systems flying smoothly.
+### 2️⃣ Deploy Monitoring
+```bash
+# Quick install (Linux/macOS)
+curl -sSL https://get.birdo.uk | sh
