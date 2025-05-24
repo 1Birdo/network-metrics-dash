@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMonitor | Support Center</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #FFFFFF;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+            --glass: rgba(43, 45, 49, 0.6);
+            --success: #3BA55D;
+            --warning: #FAA61A;
+            --danger: #ED4245;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355,100%,93%,0.15) 0px, transparent 50%);
+        }
+
+        /* Glassmorphism effect */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .navbar {
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .nav-brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.primary {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .nav-link.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 6rem;
+            padding-bottom: 4rem;
+        }
+
+        /* Support Sections */
+        .support-section {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .support-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .section-icon {
+            width: 3rem;
+            height: 3rem;
+            background: var(--gradient);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* FAQ Items */
+        .faq-item {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .faq-question i {
+            color: var(--primary);
+        }
+
+        .faq-answer {
+            color: var(--text-secondary);
+            padding-left: 1.5rem;
+        }
+
+        /* Troubleshooting List */
+        .troubleshooting-list {
+            padding: 1.5rem;
+        }
+
+        .troubleshooting-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .troubleshooting-item:last-child {
+            border-bottom: none;
+        }
+
+        .troubleshooting-icon {
+            color: var(--warning);
+            font-size: 1.2rem;
+            margin-top: 0.2rem;
+        }
+
+        .troubleshooting-content h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .troubleshooting-content p {
+            color: var(--text-secondary);
+        }
+
+        /* Contact Form */
+        .contact-form {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
+        }
+
+        /* Help Cards */
+        .help-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .help-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.8) 0%, rgba(128, 69, 221, 0.8) 100%);
+        }
+
+        .help-card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .help-card h3 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .help-card p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .help-card-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .help-card-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-operational {
+            background: rgba(59, 165, 93, 0.2);
+            color: var(--success);
+        }
+
+        .status-issues {
+            background: rgba(250, 166, 26, 0.2);
+            color: var(--warning);
+        }
+
+        .status-outage {
+            background: rgba(237, 66, 69, 0.2);
+            color: var(--danger);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--surface);
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .nav-items {
+                display: none;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .help-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <div class="nav-brand-logo">NM</div>
+            NestMonitor
+        </a>
+        <div class="nav-items">
+            <a href="/" class="nav-link">Home</a>
+            <a href="#features" class="nav-link">Features</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/support" class="nav-link">Support</a>
+            <a href="/docs" class="nav-link">Resources</a>
+            <a href="/demo" class="nav-link primary">Try Demo</a>
+            <a href="/auth/signup" class="nav-link primary">Account Portal</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-28 pb-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                <!-- Sidebar -->
+                <aside class="lg:col-span-1">
+                    <div class="sticky top-28 space-y-8">
+                        <div class="glass-card rounded-2xl p-6 shadow-md">
+                            <nav class="space-y-4">
+                                <a href="#faq" class="flex items-center space-x-3 p-3 rounded-lg bg-blue-900 bg-opacity-30 text-blue-400">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>FAQ</span>
+                                </a>
+                                <a href="#troubleshooting" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-900 hover:bg-opacity-30 text-gray-400 hover:text-gray-200">
+                                    <i class="fas fa-tools"></i>
+                                    <span>Troubleshooting</span>
+                                </a>
+                                <a href="#contact" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-900 hover:bg-opacity-30 text-gray-400 hover:text-gray-200">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>Contact Us</span>
+                                </a>
+                            </nav>
+                        </div>
+
+                        <div class="help-card rounded-2xl shadow-lg">
+                            <div class="help-card-content">
+                                <h3 class="font-semibold mb-3">Need Immediate Help?</h3>
+                                <p class="text-sm opacity-90 mb-4">Our team is here 24/7 for urgent issues.</p>
+                                <a href="mailto:support@NestMonitor.com" class="help-card-btn">
+                                    <i class="fas fa-envelope mr-2"></i>Email Support
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="help-card rounded-2xl shadow-lg">
+                            <div class="help-card-content">
+                                <h3 class="font-semibold mb-3">System Status</h3>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="status-indicator status-operational">
+                                        <i class="fas fa-circle"></i> Operational
+                                    </span>
+                                    <span class="text-xs opacity-80">Updated 5 min ago</span>
+                                </div>
+                                <p class="text-sm opacity-90 mb-4">All systems are running normally.</p>
+                                <a href="/status" class="help-card-btn">
+                                    <i class="fas fa-external-link-alt mr-2"></i>Status Page
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Support Content -->
+                <section class="lg:col-span-3 space-y-8">
+                <!-- FAQ Section -->
+                <section id="faq" class="support-section">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h2 class="section-title">Frequently Asked Questions</h2>
+                    </div>
+                    <div class="space-y-0">
+                        <div class="faq-item">
+                            <h3 class="faq-question">
+                                <i class="fas fa-key"></i>
+                                How do I reset my password?
+                            </h3>
+                            <p class="faq-answer">Currently your password is managed by your SSO service that you are using. Please contact your system administrator for password reset requests.</p>
+                        </div>
+                        <div class="faq-item">
+                            <h3 class="faq-question">
+                                <i class="fas fa-server"></i>
+                                Where can I check system outages?
+                            </h3>
+                            <p class="faq-answer">Our <a href="#status" class="text-blue-400 hover:underline">System Status</a> section provides real-time updates on any ongoing incidents or maintenance.</p>
+                        </div>
+                        <div class="faq-item">
+                            <h3 class="faq-question">
+                                <i class="fas fa-layer-group"></i>
+                                What's the difference between plans?
+                            </h3>
+                            <p class="faq-answer">Compare our <a href="/pricing" class="text-blue-400 hover:underline">pricing plans</a> to see feature availability and limitations for each tier.</p>
+                        </div>
+                        <div class="faq-item">
+                            <h3 class="faq-question">
+                                <i class="fas fa-arrow-up"></i>
+                                How do I upgrade my account?
+                            </h3>
+                            <p class="faq-answer">You can upgrade at any time from your <a href="/account/billing" class="text-blue-400 hover:underline">Billing Settings</a> page. Changes take effect immediately.</p>
+                        </div>
+                    </div>
+                </section>
+
+                    <!-- Troubleshooting Section -->
+                    <section id="troubleshooting" class="support-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <h2 class="section-title">Troubleshooting</h2>
+                        </div>
+                        <div class="troubleshooting-list">
+                            <div class="troubleshooting-item">
+                                <div class="troubleshooting-icon">
+                                    <i class="fas fa-plug"></i>
+                                </div>
+                                <div class="troubleshooting-content">
+                                    <h4>Connection Issues</h4>
+                                    <p>Ensure your internet is stable and firewall rules are not blocking connections to our servers. Whitelist <code class="bg-gray-800 px-1 rounded">api.nestmonitor.com</code> and <code class="bg-gray-800 px-1 rounded">wss://realtime.nestmonitor.com</code>.</p>
+                                </div>
+                            </div>
+                            <div class="troubleshooting-item">
+                                <div class="troubleshooting-icon">
+                                    <i class="fas fa-bug"></i>
+                                </div>
+                                <div class="troubleshooting-content">
+                                    <h4>API Errors</h4>
+                                    <p>Check if your API key is valid or has expired. Regenerate keys from your <a href="/account/api-keys" class="text-blue-400 hover:underline">Account Settings</a> if needed.</p>
+                                </div>
+                            </div>
+                            <div class="troubleshooting-item">
+                                <div class="troubleshooting-icon">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <div class="troubleshooting-content">
+                                    <h4>Slow Response</h4>
+                                    <p>Visit our <a href="/status" class="text-blue-400 hover:underline">System Status</a> for potential outages. For persistent issues, try reducing your polling interval.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Contact Us -->
+                    <section id="contact" class="support-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h2 class="section-title">Contact Support</h2>
+                        </div>
+                        <div class="contact-form">
+                            <form action="/support/contact" method="POST" class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="form-group">
+                                        <label for="name" class="form-label">Your Name</label>
+                                        <input type="text" id="name" name="name" placeholder="Enter your name" required class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Your Email</label>
+                                        <input type="email" id="email" name="email" placeholder="Enter your email" required class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <select id="subject" name="subject" class="form-input">
+                                        <option value="">Select a topic</option>
+                                        <option value="billing">Billing Inquiry</option>
+                                        <option value="technical">Technical Support</option>
+                                        <option value="sales">Sales Questions</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message" class="form-label">Your Message</label>
+                                    <textarea id="message" name="message" placeholder="Describe your issue in detail..." required class="form-input form-textarea"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="urgency" class="form-label">Urgency</label>
+                                    <div class="flex gap-4">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="urgency" value="low" class="mr-2">
+                                            <span>Low</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="urgency" value="medium" class="mr-2" checked>
+                                            <span>Medium</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="urgency" value="high" class="mr-2">
+                                            <span>High (Critical Issue)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="submit-btn">
+                                    <i class="fas fa-paper-plane mr-2"></i>Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer glass-card">
+        <p>&copy; 2025 NestMonitor. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Section Animations
+        gsap.utils.toArray(".support-section").forEach((section, i) => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top bottom-=100",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Help Card Hover Effects
+        gsap.utils.toArray(".help-card").forEach(card => {
+            card.addEventListener("mouseenter", () => {
+                gsap.to(card, {
+                    y: -5,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+            card.addEventListener("mouseleave", () => {
+                gsap.to(card, {
+                    y: 0,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        // FAQ Item Hover Effects
+        gsap.utils.toArray(".faq-item").forEach(item => {
+            item.addEventListener("mouseenter", () => {
+                gsap.to(item, {
+                    backgroundColor: "rgba(255, 255, 255, 0.03)",
+                    duration: 0.2
+                });
+            });
+            item.addEventListener("mouseleave", () => {
+                gsap.to(item, {
+                    backgroundColor: "transparent",
+                    duration: 0.2
+                });
+            });
+        });
+
+        // Active Navigation
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('#docs-nav a').forEach(item => {
+                        item.classList.remove('bg-blue-900', 'bg-opacity-30', 'text-blue-400');
+                        item.classList.add('hover:bg-gray-900', 'hover:bg-opacity-30', 'text-gray-400', 'hover:text-gray-200');
+                        if (`#${entry.target.id}` === item.getAttribute('href')) {
+                            item.classList.remove('hover:bg-gray-900', 'hover:bg-opacity-30', 'text-gray-400', 'hover:text-gray-200');
+                            item.classList.add('bg-blue-900', 'bg-opacity-30', 'text-blue-400');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.25 });
+
+        document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 0.8,
+                        scrollTo: { y: target, offsetY: 100 },
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+        });
+
+        // Form Submission Animation
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                const button = form.querySelector('button[type="submit"]');
+                gsap.to(button, {
+                    scale: 0.95,
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: 1
+                });
+            });
+        }
+    </script>
+</body>
+</html>

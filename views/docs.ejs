@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMonitor | Documentation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #FFFFFF;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+            --glass: rgba(43, 45, 49, 0.6);
+            --code-bg: #16171A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355,100%,93%,0.15) 0px, transparent 50%);
+        }
+
+        /* Glassmorphism effect */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .navbar {
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .nav-brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.primary {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .nav-link.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
+        }
+
+        /* Main Content */
+        main {
+            padding-top: 6rem;
+            padding-bottom: 4rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: sticky;
+            top: 6rem;
+        }
+
+        .docs-nav {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .docs-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            gap: 0.75rem;
+        }
+
+        .docs-nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .docs-nav-item.active {
+            background: rgba(88, 101, 242, 0.1);
+            color: var(--primary);
+        }
+
+        .docs-nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Help Card */
+        .help-card {
+            background: var(--gradient);
+            color: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .help-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.8) 0%, rgba(128, 69, 221, 0.8) 100%);
+        }
+
+        .help-card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Documentation Content */
+        .doc-section {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .doc-section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-section-icon {
+            width: 3rem;
+            height: 3rem;
+            background: var(--gradient);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .doc-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            margin: 1rem 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #E0E0E0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text);
+        }
+
+        /* API Endpoint */
+        .api-endpoint {
+            padding: 1.5rem;
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .endpoint-method.get {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ECC71;
+        }
+
+        .endpoint-path {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary);
+        }
+
+        /* Tabs */
+        .code-tabs {
+            margin: 1rem 0;
+        }
+
+        .code-tabs-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: -1px;
+        }
+
+        .code-tab {
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .code-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .code-tab.active {
+            background: var(--code-bg);
+            color: var(--primary);
+            border-color: var(--border);
+        }
+
+        .code-content {
+            background: var(--code-bg);
+            border-radius: 0 var(--radius) var(--radius) var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        /* Response Sample */
+        .response-sample {
+            background: var(--code-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        /* Premium Features */
+        .feature-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(245, 171, 53, 0.2);
+            color: #F5AB35;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--surface);
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .nav-items {
+                display: none;
+            }
+
+            .sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+
+            .doc-section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        /* Syntax Highlighting */
+        .token.comment,
+        .token.prolog,
+        .token.doctype,
+        .token.cdata {
+            color: #6A9955;
+        }
+
+        .token.punctuation {
+            color: #D4D4D4;
+        }
+
+        .token.property,
+        .token.tag,
+        .token.boolean,
+        .token.number,
+        .token.constant,
+        .token.symbol,
+        .token.deleted {
+            color: #B5CEA8;
+        }
+
+        .token.selector,
+        .token.attr-name,
+        .token.string,
+        .token.char,
+        .token.builtin,
+        .token.inserted {
+            color: #CE9178;
+        }
+
+        .token.operator,
+        .token.entity,
+        .token.url,
+        .language-css .token.string,
+        .style .token.string {
+            color: #D4D4D4;
+        }
+
+        .token.atrule,
+        .token.attr-value,
+        .token.keyword {
+            color: #569CD6;
+        }
+
+        .token.function,
+        .token.class-name {
+            color: #DCDCAA;
+        }
+
+        .token.regex,
+        .token.important,
+        .token.variable {
+            color: #D16969;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <div class="nav-brand-logo">NM</div>
+            NestMonitor
+        </a>
+        <div class="nav-items">
+            <a href="/" class="nav-link">Home</a>
+            <a href="#features" class="nav-link">Features</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/support" class="nav-link">Support</a>
+            <a href="/docs" class="nav-link">Resources</a>
+            <a href="/demo" class="nav-link primary">Try Demo</a>
+            <a href="/auth/signup" class="nav-link primary">Account Portal</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <!-- Sidebar -->
+                <div class="lg:col-span-1">
+                    <div class="sidebar space-y-8">
+                        <div class="glass-card rounded-xl p-6 shadow-sm">
+                            <nav class="space-y-3" id="docs-nav">
+                                <a href="#getting-started" class="docs-nav-item active">
+                                    <i class="fas fa-rocket"></i>
+                                    <span>Getting Started</span>
+                                </a>
+                                <a href="#installation" class="docs-nav-item">
+                                    <i class="fas fa-download"></i>
+                                    <span>Installation</span>
+                                </a>
+                                <a href="#features" class="docs-nav-item">
+                                    <i class="fas fa-star"></i>
+                                    <span>Features</span>
+                                </a>
+                                <a href="#api" class="docs-nav-item">
+                                    <i class="fas fa-code"></i>
+                                    <span>API Reference</span>
+                                </a>
+                            </nav>
+                        </div>
+
+                        <!-- Help Card -->
+                        <div class="help-card rounded-xl p-6 shadow-lg">
+                            <div class="help-card-content">
+                                <h3 class="font-semibold mb-3">Need Help?</h3>
+                                <p class="text-sm opacity-90 mb-4">Our team is here 24/7 to assist you.</p>
+                                <a href="/support" class="inline-flex items-center justify-center w-full bg-white text-blue-600 rounded-lg px-4 py-2 hover:bg-blue-50 transition-colors">
+                                    Contact Support
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation Content -->
+                <div class="lg:col-span-3 space-y-8">
+                    <!-- Getting Started -->
+                    <section id="getting-started" class="doc-section">
+                        <div class="doc-section-header">
+                            <div class="doc-section-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h2 class="doc-section-title">Getting Started</h2>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-2xl font-bold mb-6 text-white">Quick Start Guide</h3>
+                            <div class="space-y-6">
+                                <div class="glass-card p-6 rounded-xl">
+                                    <h4 class="font-semibold mb-3 text-white">1. Create Account</h4>
+                                    <p class="text-gray-300">Start by creating your free account:</p>
+                                    <div class="code-block bg-gray-900 text-gray-100 rounded-xl mt-4">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <pre><code class="language-bash">curl -X POST https://api.nestmonitor.com/v1/signup \
+  -H "Content-Type: application/json" \
+  -d '{"email": "your@email.com", "password": "securepassword"}'</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="glass-card p-6 rounded-xl">
+                                    <h4 class="font-semibold mb-3 text-white">2. Get API Key</h4>
+                                    <p class="text-gray-300">Retrieve your API key from the dashboard:</p>
+                                    <div class="code-block bg-gray-900 text-gray-100 rounded-xl mt-4">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <pre><code class="language-javascript">const API_KEY = 'your_api_key_here';</code></pre>
+                                    </div>
+                                </div>
+
+                                <div class="glass-card p-6 rounded-xl">
+                                    <h4 class="font-semibold mb-3 text-white">3. Send First Metrics</h4>
+                                    <p class="text-gray-300">Example Node.js monitoring agent:</p>
+                                    <div class="code-block bg-gray-900 text-gray-100 rounded-xl mt-4">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <i class="fas fa-copy mr-1"></i>Copy
+                                        </button>
+                                        <pre><code class="language-javascript">const monitor = require('@network-monitor/client');
+monitor.init({
+  apiKey: API_KEY,
+  serverName: 'production-web-01',
+  interval: 5000
+});</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- API Reference -->
+                    <section id="api" class="doc-section">
+                        <div class="doc-section-header">
+                            <div class="doc-section-icon">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <h2 class="doc-section-title">API Reference</h2>
+                        </div>
+
+                        <div class="api-endpoint p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="endpoint-method get">GET</span>
+                                <code class="endpoint-path">/api/v1/metrics/{serverName}</code>
+                            </div>
+                            <p class="text-gray-300 mb-4">Retrieve real-time metrics for a specific server</p>
+
+                            <h4 class="font-semibold mb-2 text-white">Parameters</h4>
+                            <ul class="list-disc pl-6 mb-4 text-gray-300">
+                                <li><code class="text-blue-400">serverName</code> - Name of the registered server</li>
+                                <li><code class="text-blue-400">history</code> - Optional. Number of data points to return (max: 100)</li>
+                            </ul>
+
+                            <div class="interactive-example">
+                                <div class="code-tabs">
+                                    <div class="code-tabs-nav">
+                                        <button class="code-tab active" onclick="switchTab(this, 'curl')">cURL</button>
+                                        <button class="code-tab" onclick="switchTab(this, 'js')">JavaScript</button>
+                                        <button class="code-tab" onclick="switchTab(this, 'python')">Python</button>
+                                    </div>
+                                    <div class="code-content">
+                                        <div class="code-block active" data-lang="curl">
+                                            <button class="copy-btn" onclick="copyCode(this)">
+                                                <i class="fas fa-copy mr-1"></i>Copy
+                                            </button>
+                                            <pre><code class="language-javascript">curl -X GET \
+  -H "Authorization: Bearer $API_KEY" \
+  https://api.nestmonitor.com/v1/metrics/production-web-01</code></pre>
+                                        </div>
+                                        <div class="code-block" data-lang="js">
+                                            <button class="copy-btn" onclick="copyCode(this)">
+                                                <i class="fas fa-copy mr-1"></i>Copy
+                                            </button>
+                                            <pre><code class="language-javascript">const response = await fetch(
+  'https://api.nestmonitor.com/v1/metrics/production-web-01',
+  {
+    headers: {
+      'Authorization': `Bearer ${API_KEY}`
+    }
+  }
+);</code></pre>
+                                        </div>
+                                        <div class="code-block" data-lang="python">
+                                            <button class="copy-btn" onclick="copyCode(this)">
+                                                <i class="fas fa-copy mr-1"></i>Copy
+                                            </button>
+                                            <pre><code class="language-python">import requests
+
+response = requests.get(
+  'https://api.nestmonitor.com/v1/metrics/production-web-01',
+  headers={'Authorization': f'Bearer {API_KEY}'}
+)</code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h4 class="font-semibold mt-6 mb-2 text-white">Response Sample</h4>
+                            <div class="response-sample">
+                                <button class="copy-btn" onclick="copyCode(this)">
+                                    <i class="fas fa-copy mr-1"></i>Copy
+                                </button>
+                                <pre><code class="language-json">{
+  "server": "production-web-01",
+  "status": "online",
+  "metrics": {
+    "cpu": 24.5,
+    "memory": 68.3,
+    "network": {
+      "in": 145.6,
+      "out": 89.4
+    },
+    "timestamp": "2024-02-20T14:35:00Z"
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- WebSocket Integration -->
+                    <section class="doc-section">
+                        <div class="doc-section-header">
+                            <div class="doc-section-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h2 class="doc-section-title">Real-Time WebSocket API</h2>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-300 mb-4">Connect to our WebSocket endpoint for real-time updates:</p>
+
+                            <div class="code-block bg-gray-900 text-gray-100 rounded-xl">
+                                <button class="copy-btn" onclick="copyCode(this)">
+                                    <i class="fas fa-copy mr-1"></i>Copy
+                                </button>
+                                <pre><code class="language-javascript">const socket = new WebSocket('wss://api.nestmonitor.com/v1/realtime');
+
+socket.addEventListener('open', () => {
+  socket.send(JSON.stringify({
+    type: 'auth',
+    apiKey: API_KEY,
+    serverName: 'production-web-01'
+  }));
+});
+
+socket.addEventListener('message', event => {
+  const data = JSON.parse(event.data);
+  // Handle real-time metrics
+});</code></pre>
+                            </div>
+
+                            <div class="mt-4 bg-yellow-900 bg-opacity-20 p-4 rounded-lg border border-yellow-800 border-opacity-50">
+                                <h4 class="font-semibold text-yellow-400 mb-2">⚠️ Important Security Notes</h4>
+                                <ul class="list-disc pl-6 text-yellow-300">
+                                    <li>Always use wss:// protocol for secure connections</li>
+                                    <li>Rotate API keys regularly via the dashboard</li>
+                                    <li>Enable 2FA for production accounts</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Subscription Features -->
+                    <section class="doc-section">
+                        <div class="doc-section-header">
+                            <div class="doc-section-icon">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <h2 class="doc-section-title">Premium Features</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid gap-4 md:grid-cols-2">
+                                <div class="glass-card p-6 rounded-xl">
+                                    <h3 class="font-semibold mb-2 text-white">Advanced Analytics
+                                        <span class="feature-badge">PRO PLAN+</span>
+                                    </h3>
+                                    <p class="text-gray-300">Historical data retention up to 5 years</p>
+                                </div>
+                                <div class="glass-card p-6 rounded-xl">
+                                    <h3 class="font-semibold mb-2 text-white">Custom Alerts
+                                        <span class="feature-badge">TEAM PLAN+</span>
+                                    </h3>
+                                    <p class="text-gray-300">Slack/Teams integration & SMS alerts</p>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <a href="/pricing" class="nav-link primary">Compare All Plans →</a>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer glass-card">
+        <p>&copy; 2025 NestMonitor. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Section Animations
+        gsap.utils.toArray(".doc-section").forEach((section, i) => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top bottom-=100",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Active Navigation
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.docs-nav-item').forEach(item => {
+                        item.classList.remove('active');
+                        if (`#${entry.target.id}` === item.getAttribute('href')) {
+                            item.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.25 });
+
+        document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
+
+        // Copy Functionality
+        function copyCode(button) {
+            const code = button.closest('.code-block').querySelector('code').innerText.trim();
+            navigator.clipboard.writeText(code).then(() => {
+                button.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
+                }, 1500);
+            }).catch(() => {
+                button.innerHTML = '<i class="fas fa-times mr-1"></i>Error';
+            });
+        }
+
+        // Tab switching functionality
+        function switchTab(button, lang) {
+            const tabs = button.parentElement.children;
+            Array.from(tabs).forEach(t => t.classList.remove('active'));
+            button.classList.add('active');
+            
+            const content = button.closest('.code-tabs').querySelector('.code-content');
+            content.querySelectorAll('.code-block').forEach(b => b.classList.remove('active'));
+            content.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+        }
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 0.8,
+                        scrollTo: { y: target, offsetY: 100 },
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

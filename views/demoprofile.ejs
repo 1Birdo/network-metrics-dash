@@ -1,0 +1,479 @@
+<!-- views/demoprofile.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --surface-secondary: #313338;
+            --background: #1E1F22;
+            --background-dark: #111214;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --border: #404249;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045D6 100%);
+            --glass: rgba(46, 48, 54, 0.6);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background-dark);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%);
+        }
+
+        /* Navigation */
+        .navbar {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(237, 66, 69, 0.2);
+            color: #ED4245;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            border: 1px solid rgba(237, 66, 69, 0.3);
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-danger:hover {
+            background: rgba(237, 66, 69, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 8rem 5% 4rem;
+            opacity: 0;
+        }
+
+        .profile-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(88, 101, 242, 0.2);
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .profile-info h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-info p {
+            color: var(--text-secondary);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detail-card {
+            background: var(--surface-secondary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+        }
+
+        .detail-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .detail-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .api-key-input {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.75rem 1rem;
+            width: 100%;
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.75rem;
+        }
+
+        .toggle-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .toggle-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .debug-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .debug-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .debug-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .debug-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .debug-arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        .debug-content {
+            margin-top: 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .debug-content pre {
+            background: var(--background);
+            border-radius: var(--radius);
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-active {
+            background: #3BA55D;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 7rem 5% 3rem;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <div class="nav-brand-logo">NM</div>
+            NestMonitor
+        </a>
+        <div class="nav-items">
+            <a href="/demo" class="btn-primary">Dashboard</a>
+            <a href="/" class="btn-danger">Logout</a>
+            <a href="/" class="btn-danger">Leave Demo</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <h2>John Doe</h2>
+                    <p>john.doe@example.com</p>
+                </div>
+            </div>
+            
+            <div class="details-grid">
+                <!-- Account Details -->
+                <div class="detail-card">
+                    <h3>Account Details</h3>
+                    <div class="detail-item">
+                        <div class="detail-label">User ID</div>
+                        <div class="detail-value">123456</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">API Key</div>
+                        <input type="password" id="apiKey" value="abcd-1234-efgh-5678" readonly class="api-key-input">
+                        <button id="toggleApiKeyBtn" class="toggle-btn">Show/Hide</button>
+                    </div>
+                </div>
+                
+                <!-- Activity Overview -->
+                <div class="detail-card">
+                    <h3>Activity Overview</h3>
+                    <div class="detail-item">
+                        <div class="detail-label">Last Login</div>
+                        <div class="detail-value">2025-02-20 15:42</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">API Calls Today</div>
+                        <div class="status-indicator">
+                            <span class="status-dot status-active"></span>
+                            <span class="detail-value">42 (Active)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Debug Section -->
+        <div class="debug-card">
+            <div class="debug-header" id="toggleDebugBtn">
+                <h3>Debug Information</h3>
+                <i class="fas fa-chevron-down debug-arrow"></i>
+            </div>
+            <div class="debug-content" id="debugContent">
+                <pre>
+{
+  "user": {
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "id": "123456"
+  },
+  "apiKey": "abcd-1234-efgh-5678",
+  "activity": {
+    "lastLogin": "2025-02-20 15:42",
+    "apiCallsToday": 42
+  }
+}
+                </pre>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Fade in main content
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.to("#mainContent", {
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+            
+            // Set up scroll animations
+            animateOnScroll(document.querySelectorAll('.profile-card, .detail-card, .debug-card'));
+        });
+        
+        // Scroll animations
+        const animateOnScroll = (elements) => {
+            elements.forEach(el => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 80%",
+                        toggleActions: "play none none none"
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+            });
+        };
+        
+        // Toggle API key visibility
+        document.getElementById('toggleApiKeyBtn').addEventListener('click', () => {
+            const apiKeyInput = document.getElementById('apiKey');
+            apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password';
+        });
+        
+        // Toggle debug section
+        document.getElementById('toggleDebugBtn').addEventListener('click', () => {
+            const content = document.getElementById('debugContent');
+            const arrow = document.querySelector('.debug-arrow');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                arrow.classList.remove('rotated');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                arrow.classList.add('rotated');
+            }
+        });
+    </script>
+</body>
+</html>

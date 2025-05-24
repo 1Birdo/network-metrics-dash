@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service | NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --glass: rgba(32, 34, 37, 0.6);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .policy-section {
+            transition: all 0.3s ease;
+        }
+
+        .policy-section:hover {
+            border-left: 3px solid var(--primary);
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            z-index: 50;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 40;
+            padding: 1rem 5%;
+        }
+
+        .nav-link.active {
+            background: var(--primary);
+            color: white !important;
+            border-radius: var(--radius);
+        }
+
+        .back-to-top {
+            background: var(--gradient);
+            transition: all 0.3s ease;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .nav-items {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg">NM</div>
+                <span class="text-xl font-bold text-white">NestMonitor</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/dashboard" class="text-text-secondary hover:text-white transition-colors">Dashboard</a>
+                <a href="/cloud-monitoring" class="text-text-secondary hover:text-white transition-colors">Monitoring</a>
+                <a href="/network-security" class="text-text-secondary hover:text-white transition-colors">Security</a>
+                <a href="/settings" class="text-text-secondary hover:text-white transition-colors">Settings</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        <!-- Page Header -->
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold gradient-text mb-3">Terms of Service & Acceptable Use Policy</h1>
+            <p class="text-text-secondary">Effective Date: February 24, 2025</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-32">
+                    <div class="glass-card rounded-xl p-6 border border-border/10">
+                        <nav class="space-y-2">
+                            <a href="#acceptance" class="flex items-center space-x-3 p-3 rounded-lg bg-primary/10 text-primary">
+                                <i class="fas fa-file-signature text-sm"></i>
+                                <span>Acceptance</span>
+                            </a>
+                            <a href="#use" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-laptop-code text-sm"></i>
+                                <span>Use of Services</span>
+                            </a>
+                            <a href="#account" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-user-shield text-sm"></i>
+                                <span>Account</span>
+                            </a>
+                            <a href="#termination" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-power-off text-sm"></i>
+                                <span>Termination</span>
+                            </a>
+                            <a href="#liability" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-balance-scale text-sm"></i>
+                                <span>Liability</span>
+                            </a>
+                            <a href="#changes" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-sync-alt text-sm"></i>
+                                <span>Changes</span>
+                            </a>
+                            <a href="#contact" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-envelope text-sm"></i>
+                                <span>Contact</span>
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="lg:col-span-4 space-y-8">
+                <!-- Acceptance Section -->
+                <section id="acceptance" class="glass-card rounded-xl p-8 policy-section">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-file-signature"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white">1. Acceptance of Terms</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-text-secondary">
+                            By accessing or using the services provided by NestMonitor, you agree to comply with and be bound by these Terms of Service ("ToS") and Acceptable Use Policy ("AUP"). If you do not agree to these terms, please do not use our services.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Use of Services Section -->
+                <section id="use" class="glass-card rounded-xl p-8 policy-section">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white">2. Use of Services</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-text-secondary">
+                            You agree to use our services only for lawful purposes. Prohibited activities include but are not limited to:
+                        </p>
+                        <ul class="list-disc pl-6 space-y-3 text-text-secondary marker:text-primary">
+                            <li>Unauthorized access to networks, devices, or data</li>
+                            <li>Disruption of service or infrastructure</li>
+                            <li>Transmission of malware, viruses, or harmful code</li>
+                            <li>Engaging in illegal, fraudulent, or abusive activities</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Account Section -->
+                <section id="account" class="glass-card rounded-xl p-8 policy-section">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white">3. Account Responsibilities</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-text-secondary">
+                            You are responsible for maintaining the confidentiality of your account information and for all activities conducted under your account. Notify us immediately of any unauthorized access or suspicious activity.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Termination Section -->
+                <section id="termination" class="glass-card rounded-xl p-8 policy-section">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-power-off"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white">4. Termination</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-text-secondary">
+                            We reserve the right to suspend or terminate your access to our services at our sole discretion, without notice, for any violation of these terms.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Liability Section -->
+                <section id="liability" class="glass-card rounded-xl p-8 policy-section">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white">5. Limitation of Liability</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-text-secondary">
+                            NestMonitor is not liable for any indirect, incidental, or consequential damages resulting from the use of our services. Use our services at your own risk.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Changes Section -->
+                <section id="changes" class="glass-card rounded-xl p-8 policy-section">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white">6. Changes to Terms</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-text-secondary">
+                            We may revise these terms at any time. Continued use of our services constitutes acceptance of any changes. Please review this page periodically.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Contact Section -->
+                <section id="contact" class="glass-card rounded-xl p-8 policy-section">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white">7. Contact Information</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-text-secondary">
+                            If you have any questions regarding these terms, please contact us at <a href="mailto:support@nestmonitor.com" class="text-primary hover:underline">support@nestmonitor.com</a>.
+                        </p>
+                        <a href="#top" class="back-to-top inline-flex items-center px-4 py-2 rounded-lg text-white mt-6">
+                            <i class="fas fa-arrow-up mr-2"></i> Back to Top
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface border-t border-border/10 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">About NestMonitor</h3>
+                    <p class="text-text-secondary">Enterprise network monitoring and infrastructure management solutions.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <div class="space-y-2">
+                        <a href="/privacy" class="text-text-secondary hover:text-white transition-colors">Privacy Policy</a>
+                        <a href="/terms" class="text-text-secondary hover:text-white transition-colors">Terms of Service</a>
+                        <a href="/security" class="text-text-secondary hover:text-white transition-colors">Security</a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <a href="mailto:support@nestmonitor.com" class="text-text-secondary hover:text-white transition-colors">support@nestmonitor.com</a>
+                </div>
+            </div>
+            <div class="mt-12 pt-6 border-t border-border/10 text-center text-text-secondary">
+                &copy; 2025 NestMonitor. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+        // Progress Bar Animation
+        gsap.to("#progress-bar", {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                scrub: 0.3,
+                start: "top top",
+                end: "bottom bottom"
+            }
+        });
+
+        // Section Animations
+        gsap.utils.toArray("section").forEach((section, i) => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Sidebar Link Active State
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.glass-card nav a').forEach(link => {
+                        link.classList.remove('bg-primary/10', 'text-primary');
+                        if (`#${entry.target.id}` === link.getAttribute('href')) {
+                            link.classList.add('bg-primary/10', 'text-primary');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+        // Smooth Scrolling for Anchor Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 0.8,
+                        scrollTo: { y: target, offsetY: 100 },
+                        ease: "power2.inOut"
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

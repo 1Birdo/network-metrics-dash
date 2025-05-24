@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Monitoring | NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --glass: rgba(32, 34, 37, 0.6);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hover-grow {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hover-grow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius);
+            padding: 0.25rem 0.5rem;
+        }
+
+        /* Progress Bar */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            z-index: 50;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 40;
+            padding: 1rem 5%;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5865F2',
+                        surface: '#2B2D31',
+                        background: '#1E1F22',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg">NM</div>
+                <span class="text-xl font-bold text-white">NestMonitor</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/dashboard" class="text-text-secondary hover:text-white transition-colors">Dashboard</a>
+                <a href="/cloud-monitoring" class="text-white font-medium">Monitoring</a>
+                <a href="/network-security" class="text-text-secondary hover:text-white transition-colors">Security</a>
+                <a href="/settings" class="text-text-secondary hover:text-white transition-colors">Settings</a>
+	    </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        <!-- Page Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold gradient-text mb-3">Cloud Monitoring</h1>
+            <p class="text-text-secondary max-w-3xl">Monitor your multi-cloud infrastructure with real-time metrics and alerts</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-32 space-y-6">
+                    <div class="glass-card rounded-xl p-6 border border-border/10">
+                        <nav class="space-y-2">
+                            <a href="#architecture" class="flex items-center space-x-3 p-3 rounded-lg bg-primary/10 text-primary">
+                                <i class="fas fa-cloud text-sm"></i>
+                                <span>Cloud Architecture</span>
+                            </a>
+                            <a href="#monitoring" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-chart-line text-sm"></i>
+                                <span>Monitoring Setup</span>
+                            </a>
+                            <a href="#integration" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-plug text-sm"></i>
+                                <span>Cloud Integration</span>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="glass-card rounded-xl p-6 border border-border/10">
+                        <h3 class="font-medium mb-4 flex items-center">
+                            <i class="fas fa-bolt text-yellow-400 mr-2"></i>
+                            Quick Stats
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-xs text-text-secondary">Active Services</p>
+                                <p class="text-xl font-bold">47</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-text-secondary">Alerts (24h)</p>
+                                <p class="text-xl font-bold text-red-400">3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="lg:col-span-4 space-y-8">
+                <!-- Architecture Section -->
+                <section id="architecture" class="glass-card rounded-xl p-8 hover-grow">
+                    <div class="flex items-center space-x-4 mb-8">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-white">Cloud Architecture Monitoring</h2>
+                            <p class="text-text-secondary">Monitor hybrid and multi-cloud environments</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <h3 class="text-xl font-semibold">Multi-Cloud Monitoring</h3>
+                        <p class="text-text-secondary">
+                            Unified visibility across AWS, Azure, GCP, and private cloud infrastructure with:
+                        </p>
+                        <ul class="list-disc pl-6 space-y-3 text-text-secondary marker:text-primary">
+                            <li>Real-time metrics collection (1s granularity)</li>
+                            <li>Distributed tracing across cloud services</li>
+                            <li>Auto-discovery of cloud resources</li>
+                        </ul>
+
+                        <div class="mt-6 bg-surface/70 rounded-xl p-6 border border-border/10">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-mono text-sm text-text-secondary">Example Configuration</h4>
+                                <button onclick="copyCode(this)" class="px-3 py-1 text-xs bg-surface rounded-lg border border-border/10 hover:bg-surface/50 transition-colors">
+                                    <i class="fas fa-copy mr-1"></i>Copy
+                                </button>
+                            </div>
+                            <pre class="code-block overflow-x-auto p-4"><code class="language-yaml">cloud_providers:
+  - aws:
+      regions: [us-east-1, eu-west-1]
+      services: [ec2, s3, lambda]
+  - azure:
+      resource_groups: [production]</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Monitoring Section -->
+                <section id="monitoring" class="glass-card rounded-xl p-8 hover-grow">
+                    <div class="flex items-center space-x-4 mb-8">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-white">Advanced Monitoring Metrics</h2>
+                            <p class="text-text-secondary">Real-time insights into your cloud infrastructure</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-surface/70 p-6 rounded-xl border border-border/10 hover-grow">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h3 class="font-semibold mb-2">Resource Utilization</h3>
+                                    <p class="text-sm text-text-secondary">Track CPU, memory, and storage usage</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <i class="fas fa-microchip"></i>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <canvas id="cpuChart" height="120"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-surface/70 p-6 rounded-xl border border-border/10 hover-grow">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h3 class="font-semibold mb-2">Network Throughput</h3>
+                                    <p class="text-sm text-text-secondary">Inbound/outbound traffic metrics</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
+                                    <i class="fas fa-network-wired"></i>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <canvas id="networkChart" height="120"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Progress Bar Animation
+        gsap.to("#progress-bar", {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                scrub: 0.3,
+                start: "top top",
+                end: "bottom bottom"
+            }
+        });
+
+        // Section Animations
+        gsap.utils.toArray("section").forEach((section, i) => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Sidebar Link Active State
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.glass-card nav a').forEach(link => {
+                        link.classList.remove('bg-primary/10', 'text-primary');
+                        if (`#${entry.target.id}` === link.getAttribute('href')) {
+                            link.classList.add('bg-primary/10', 'text-primary');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+        // Copy Code Function
+        function copyCode(button) {
+            const code = button.closest('.bg-surface').querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+                setTimeout(() => {
+                    button.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
+                }, 2000);
+            });
+        }
+
+        // Initialize Charts
+        document.addEventListener('DOMContentLoaded', () => {
+            // CPU Usage Chart
+            const cpuCtx = document.getElementById('cpuChart').getContext('2d');
+            new Chart(cpuCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: 12}, (_, i) => `${i*5}m`),
+                    datasets: [{
+                        label: 'CPU Usage',
+                        data: [65, 59, 80, 81, 56, 72, 68, 75, 82, 78, 65, 70],
+                        borderColor: '#5865F2',
+                        backgroundColor: 'rgba(88, 101, 242, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#B5BAC1' }
+                        },
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#B5BAC1' }
+                        }
+                    }
+                }
+            });
+
+            // Network Chart
+            const networkCtx = document.getElementById('networkChart').getContext('2d');
+            new Chart(networkCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Inbound',
+                            data: [12, 19, 15, 22, 18, 14, 10],
+                            backgroundColor: 'rgba(88, 101, 242, 0.7)'
+                        },
+                        {
+                            label: 'Outbound',
+                            data: [8, 11, 13, 15, 12, 9, 7],
+                            backgroundColor: 'rgba(128, 69, 221, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { 
+                            display: false,
+                            labels: { color: '#B5BAC1' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#B5BAC1' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#B5BAC1' }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
