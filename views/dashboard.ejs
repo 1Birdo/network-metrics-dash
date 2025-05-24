@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #FFFFFF;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+            --glass: rgba(43, 45, 49, 0.6);
+            --success: #3BA55D;
+            --warning: #FAA61A;
+            --danger: #ED4245;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355,100%,93%,0.15) 0px, transparent 50%);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            position: fixed;
+            height: 100vh;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: bold;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .brand-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius);
+            margin: 0.25rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: rgba(88, 101, 242, 0.1);
+            color: var(--primary);
+        }
+
+        .nav-item i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .plan-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .plan-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .plan-stats {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-title p {
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn.admin {
+            background: rgba(59, 165, 93, 0.1);
+            color: var(--success);
+        }
+
+        .action-btn.logout {
+            background: rgba(237, 66, 69, 0.1);
+            color: var(--danger);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-left: auto;
+        }
+
+        .radial-progress {
+            --value: 0;
+            --size: 3.5rem;
+            --thickness: 6px;
+            color: var(--primary);
+        }
+
+        /* Server Cards */
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .server-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .server-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .server-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-online {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .status-offline {
+            background: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        .refresh-btn {
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            color: var(--primary);
+            transform: rotate(180deg);
+        }
+
+        /* Progress Bars */
+        .progress-container {
+            margin-bottom: 1rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-cpu {
+            background: var(--primary);
+        }
+
+        .progress-memory {
+            background: var(--success);
+        }
+
+        .progress-disk {
+            background: var(--warning);
+        }
+
+        .server-footer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+        }
+
+        /* Insights Card */
+        .insights-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .insights-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .insight-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .insight-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .insight-value {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .trend-up {
+            color: var(--success);
+        }
+
+        .trend-down {
+            color: var(--danger);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .skeleton-loader {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .refreshing {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refreshing::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                120deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.1) 50%,
+                rgba(255,255,255,0) 100%
+            );
+            animation: shimmer 1.5s infinite;
+            pointer-events: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <div class="brand-logo">NM</div>
+                <span class="brand-name">NestMonitor</span>
+            </div>
+        </div>
+
+        <nav class="mt-4">
+            <a href="/dashboard" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="/settings" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            <a href="/payment" class="nav-item">
+                <i class="fas fa-arrow-up"></i>
+                <span>Upgrade Plan</span>
+            </a>
+        </nav>
+
+        <div class="plan-info">
+            <div class="plan-name"><%= subscription.plan_name %></div>
+            <div class="plan-stats"><%= servers.length %>/<%= subscription.max_devices %> devices</div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">
+                <h1>Server Dashboard</h1>
+                <p>Welcome back, <%= user.name %></p>
+            </div>
+            <div class="header-actions">
+                <% if(typeof user !== 'undefined' && user.role === 'admin') { %>
+                <a href="/admin" class="action-btn admin">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Admin</span>
+                </a>
+                <% } %>
+                <a href="/logout" class="action-btn logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Summary Cards -->
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-title">Active Servers</div>
+                <div class="flex items-center">
+                    <div class="metric-value">
+                        <%= servers.filter(s => s.isOnline).length %>/<%= servers.length %>
+                    </div>
+                    <div class="radial-progress" 
+                         style="--value:<%= (servers.filter(s => s.isOnline).length / servers.length) * 100 %>;">
+                        <span class="text-sm"><%= Math.round((servers.filter(s => s.isOnline).length / servers.length) * 100) %>%</span>
+                    </div>
+                    <i class="fas fa-server metric-icon"></i>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Avg CPU Usage</div>
+                <div class="flex items-center">
+                    <div class="metric-value"><%= averages.cpu %>%</div>
+                    <i class="fas fa-microchip metric-icon"></i>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Avg Memory Usage</div>
+                <div class="flex items-center">
+                    <div class="metric-value"><%= averages.memory %>%</div>
+                    <i class="fas fa-memory metric-icon"></i>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Avg Disk Usage</div>
+                <div class="flex items-center">
+                    <div class="metric-value"><%= averages.disk %>%</div>
+                    <i class="fas fa-hdd metric-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Predictive Insights -->
+        <div class="insights-card">
+            <h3 class="insights-title">Predictive Insights</h3>
+            <div id="predictiveInsights" class="insights-grid">
+                <!-- Insights will be populated here -->
+            </div>
+        </div>
+
+        <!-- Server Cards -->
+        <div class="servers-grid">
+            <% servers.forEach(server => { %>
+            <div class="server-card" data-server="<%= server.name %>">
+                <div class="server-header">
+                    <h3 class="server-name">
+                        <span class="status-indicator <%= server.isOnline ? 'status-online' : 'status-offline' %>"></span>
+                        <%= server.name %>
+                    </h3>
+                    <button onclick="refreshServer('<%= server.name %>')" class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+
+                <!-- CPU Usage -->
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>CPU Usage</span>
+                        <span class="cpu-percent"><%= server.metrics.cpu_percent || 0 %>%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-cpu" style="width: <%= server.metrics.cpu_percent || 0 %>%"></div>
+                    </div>
+                </div>
+
+                <!-- Memory Usage -->
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Memory Usage</span>
+                        <span class="memory-percent"><%= server.metrics.memory_percent || 0 %>%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-memory" style="width: <%= server.metrics.memory_percent || 0 %>%"></div>
+                    </div>
+                </div>
+
+                <!-- Disk Usage -->
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Disk Usage</span>
+                        <span class="disk-percent"><%= server.metrics.disk_percent || 0 %>%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-disk" style="width: <%= server.metrics.disk_percent || 0 %>%"></div>
+                    </div>
+                </div>
+
+                <div class="server-footer">
+                    <i class="fas fa-clock"></i>
+                    <span class="last-update"><%= new Date(server.lastUpdate).toLocaleTimeString() %></span>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </main>
+
+    <script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Animate cards on load
+        gsap.utils.toArray(".metric-card, .server-card").forEach((card, i) => {
+            gsap.from(card, {
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top bottom-=100",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Refresh metrics function
+        async function refreshServer(serverName) {
+            let card;
+            try {
+                card = document.querySelector(`[data-server="${serverName}"]`);
+                if (!card) {
+                    console.warn(`Server card not found: ${serverName}`);
+                    return;
+                }
+
+                // Add refreshing state for visual feedback
+                card.classList.add('refreshing');
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                const res = await fetch(`/api/metrics/${serverName}`, {
+                    signal: controller.signal,
+                    headers: {
+                        'x-skip-logging': 'true'
+                    }
+                });
+                clearTimeout(timeoutId);
+                
+                if (!res.ok) throw new Error('Failed to fetch metrics');
+                
+                const data = await res.json();
+                
+                // Update metrics with null checks
+                const updateElement = (selector, value) => {
+                    const element = card.querySelector(selector);
+                    if (element) element.textContent = `${value}%`;
+                };
+
+                const updateProgressBar = (selector, value) => {
+                    const bar = card.querySelector(selector);
+                    if (bar) bar.style.width = `${value}%`;
+                };
+
+                updateElement('.cpu-percent', data.metrics.cpu_percent);
+                updateProgressBar('.progress-cpu', data.metrics.cpu_percent);
+                
+                updateElement('.memory-percent', data.metrics.memory_percent);
+                updateProgressBar('.progress-memory', data.metrics.memory_percent);
+                
+                updateElement('.disk-percent', data.metrics.disk_percent);
+                updateProgressBar('.progress-disk', data.metrics.disk_percent);
+                
+                const lastUpdate = card.querySelector('.last-update');
+                if (lastUpdate) {
+                    lastUpdate.textContent = new Date(data.lastUpdate).toLocaleTimeString();
+                }
+                
+                // Update status indicator
+                const statusIndicator = card.querySelector('.status-indicator');
+                if (statusIndicator) {
+                    statusIndicator.classList.remove('status-online', 'status-offline');
+                    statusIndicator.classList.add(data.isOnline ? 'status-online' : 'status-offline');
+                }
+
+                // Update summary after refreshing individual servers
+                updateAverages();
+
+            } catch (error) {
+                console.error('Error refreshing server:', error);
+                // Show error state in the card
+                if (card) {
+                    const lastUpdate = card.querySelector('.last-update');
+                    if (lastUpdate) {
+                        lastUpdate.textContent = 'Error refreshing data';
+                    }
+                }
+            } finally {
+                // Remove loading state
+                if (card) {
+                    card.classList.remove('refreshing');
+                }
+            }
+        }
+
+        // Auto-refresh with DOM-based server list
+        function autoRefresh() {
+            const serverCards = document.querySelectorAll('[data-server]');
+            serverCards.forEach(card => {
+                const serverName = card.dataset.server;
+                refreshServer(serverName);
+            });
+        }
+
+        // Update summary statistics
+        function updateAverages() {
+            let totalCpu = 0;
+            let totalMemory = 0;
+            let totalDisk = 0;
+            let serversWithMetrics = 0;
+            let serversOnline = 0;
+            
+            document.querySelectorAll('[data-server]').forEach(card => {
+                const statusIndicator = card.querySelector('.status-indicator');
+                if (!statusIndicator) return;
+                
+                const isOnline = statusIndicator.classList.contains('status-online');
+                if (isOnline) {
+                    serversOnline++;
+                    
+                    const cpuText = card.querySelector('.cpu-percent')?.textContent || '0%';
+                    const memoryText = card.querySelector('.memory-percent')?.textContent || '0%';
+                    const diskText = card.querySelector('.disk-percent')?.textContent || '0%';
+                    
+                    const cpuPercent = parseFloat(cpuText);
+                    const memoryPercent = parseFloat(memoryText);
+                    const diskPercent = parseFloat(diskText);
+                    
+                    if (!isNaN(cpuPercent) && !isNaN(memoryPercent) && !isNaN(diskPercent)) {
+                        serversWithMetrics++;
+                        totalCpu += cpuPercent;
+                        totalMemory += memoryPercent;
+                        totalDisk += diskPercent;
+                    }
+                }
+            });
+            
+            // Update average cards
+            const cpuValue = document.querySelectorAll('.metric-card .metric-value')[1];
+            const memoryValue = document.querySelectorAll('.metric-card .metric-value')[2];
+            const diskValue = document.querySelectorAll('.metric-card .metric-value')[3];
+            const serversValue = document.querySelectorAll('.metric-card .metric-value')[0];
+            
+            if (serversWithMetrics > 0) {
+                if (cpuValue) cpuValue.textContent = Math.round(totalCpu / serversWithMetrics) + '%';
+                if (memoryValue) memoryValue.textContent = Math.round(totalMemory / serversWithMetrics) + '%';
+                if (diskValue) diskValue.textContent = Math.round(totalDisk / serversWithMetrics) + '%';
+            }
+            
+            // Update server count
+            const totalServers = document.querySelectorAll('[data-server]').length;
+            if (serversValue) serversValue.textContent = serversOnline + '/' + totalServers;
+            
+            // Update progress circle
+            const progressCircle = document.querySelector('.radial-progress');
+            if (progressCircle) {
+                const percentage = (serversOnline / totalServers) * 100;
+                progressCircle.style.setProperty('--value', percentage);
+                
+                const progressText = progressCircle.querySelector('span');
+                if (progressText) {
+                    progressText.textContent = Math.round(percentage) + '%';
+                }
+            }
+        }
+
+        // WebSocket for real-time updates
+        const ws = new WebSocket(`wss://${window.location.host}`);
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'metrics') {
+                // Update metrics in real-time
+                const serverCard = document.querySelector(`[data-server="${data.serverName}"]`);
+                if (serverCard) {
+                    serverCard.querySelector('.cpu-percent').textContent = `${data.metrics.cpu_percent}%`;
+                    serverCard.querySelector('.progress-cpu').style.width = `${data.metrics.cpu_percent}%`;
+                    serverCard.querySelector('.memory-percent').textContent = `${data.metrics.memory_percent}%`;
+                    serverCard.querySelector('.progress-memory').style.width = `${data.metrics.memory_percent}%`;
+                    serverCard.querySelector('.disk-percent').textContent = `${data.metrics.disk_percent}%`;
+                    serverCard.querySelector('.progress-disk').style.width = `${data.metrics.disk_percent}%`;
+                    serverCard.querySelector('.last-update').textContent = new Date().toLocaleTimeString();
+                    
+                    // Update status indicator
+                    const statusIndicator = serverCard.querySelector('.status-indicator');
+                    if (statusIndicator) {
+                        statusIndicator.classList.remove('status-online', 'status-offline');
+                        statusIndicator.classList.add(data.isOnline ? 'status-online' : 'status-offline');
+                    }
+                }
+                
+                // Update averages
+                updateAverages();
+            }
+        };
+
+        // Fetch predictive insights
+        async function fetchPredictiveInsights() {
+            const insightsDiv = document.getElementById('predictiveInsights');
+            
+            // Check if servers array exists and has at least one server
+            <% if (servers && servers.length > 0) { %>
+                try {
+                    const response = await fetch('/api/trends/<%= servers[0].name %>');
+                    const trends = await response.json();
+                    
+                    if (trends) {
+                        insightsDiv.innerHTML = `
+                            <div class="insight-item">
+                                <div class="insight-label">CPU Trend</div>
+                                <div class="insight-value">
+                                    ${trends.cpuTrend > 0 ? 
+                                        '<i class="fas fa-arrow-up trend-up"></i>' : 
+                                        '<i class="fas fa-arrow-down trend-down"></i>'}
+                                    ${Math.abs(trends.cpuTrend).toFixed(2)}%
+                                </div>
+                                <div class="insight-label">Predicted: ${trends.predictedCpu.toFixed(2)}%</div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-label">Memory Trend</div>
+                                <div class="insight-value">
+                                    ${trends.memoryTrend > 0 ? 
+                                        '<i class="fas fa-arrow-up trend-up"></i>' : 
+                                        '<i class="fas fa-arrow-down trend-down"></i>'}
+                                    ${Math.abs(trends.memoryTrend).toFixed(2)}%
+                                </div>
+                                <div class="insight-label">Predicted: ${trends.predictedMemory.toFixed(2)}%</div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="insight-label">Disk Trend</div>
+                                <div class="insight-value">
+                                    ${trends.diskTrend > 0 ? 
+                                        '<i class="fas fa-arrow-up trend-up"></i>' : 
+                                        '<i class="fas fa-arrow-down trend-down"></i>'}
+                                    ${Math.abs(trends.diskTrend).toFixed(2)}%
+                                </div>
+                                <div class="insight-label">Predicted: ${trends.predictedDisk.toFixed(2)}%</div>
+                            </div>
+                        `;
+                    } else {
+                        insightsDiv.innerHTML = `<div class="insight-item"><div class="insight-label">Not enough data for predictions</div></div>`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching predictions:', error);
+                    insightsDiv.innerHTML = `<div class="insight-item"><div class="insight-label">Error loading predictions</div></div>`;
+                }
+            <% } else { %>
+                insightsDiv.innerHTML = `<div class="insight-item"><div class="insight-label">No servers available</div></div>`;
+            <% } %>
+        }
+
+        fetchPredictiveInsights();
+        setInterval(fetchPredictiveInsights, 10000); // Refresh every 10 seconds
+
+        // Initial refresh
+        autoRefresh();
+            
+        // Set up periodic refresh every 3 seconds
+        setInterval(autoRefresh, 3000);
+    </script>
+</body>
+</html>

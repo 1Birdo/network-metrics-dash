@@ -1,0 +1,758 @@
+<!-- views/dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitor Dashboard | NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --surface-secondary: #313338;
+            --background: #1E1F22;
+            --background-dark: #111214;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --border: #404249;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045D6 100%);
+            --glass: rgba(46, 48, 54, 0.6);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background-dark);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%);
+        }
+
+        /* Navigation */
+        .navbar {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .nav-brand-logo {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient);
+            border-radius: var(--radius);
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.4);
+        }
+
+        .btn-danger {
+            background: rgba(237, 66, 69, 0.2);
+            color: #ED4245;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            border: 1px solid rgba(237, 66, 69, 0.3);
+            transition: var(--transition);
+        }
+
+        .btn-danger:hover {
+            background: rgba(237, 66, 69, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 8rem 5% 4rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            backdrop-filter: blur(6px);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(88, 101, 242, 0.2);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Server Grid */
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .server-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(88, 101, 242, 0.2);
+        }
+
+        .server-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .server-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .server-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .server-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: rgba(59, 165, 93, 0.1);
+            color: #3BA55D;
+        }
+
+        .status-offline {
+            background: rgba(237, 66, 69, 0.1);
+            color: #ED4245;
+        }
+
+        .status-pulse {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .refresh-btn {
+            color: var(--text-secondary);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            color: var(--primary);
+            transform: rotate(180deg);
+        }
+
+        .metric {
+            margin-bottom: 1.25rem;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .metric-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+            background: var(--background);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-cpu {
+            background: var(--primary);
+        }
+
+        .progress-memory {
+            background: #3BA55D;
+        }
+
+        .progress-disk {
+            background: #8045D6;
+        }
+
+        .progress-critical {
+            background: #ED4245;
+        }
+
+        .last-updated {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Animations */
+        .animate-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 7rem 5% 3rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <div class="nav-brand-logo">NM</div>
+            NestMonitor
+        </a>
+        <div class="nav-items">
+            <a href="/demo" class="nav-link">Dashboard</a>
+            <a href="/demoprofile" class="nav-link">Profile</a>
+            <a href="/" class="btn-danger">Logout</a>
+            <a href="/" class="btn-danger">Leave Demo</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 class="section-title">System Overview</h1>
+        
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="stat-value" data-server-count>3/3</div>
+                <div class="stat-label">Active Servers</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="stat-value avg-cpu">0%</div>
+                <div class="stat-label">Average CPU Usage</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-memory"></i>
+                </div>
+                <div class="stat-value avg-memory">0%</div>
+                <div class="stat-label">Average Memory Usage</div>
+            </div>
+        </div>
+
+        <!-- Server Grid -->
+        <h1 class="section-title">Server Monitoring</h1>
+        <div class="server-grid">
+            <!-- Web Server -->
+            <div class="server-card" data-server="web-01">
+                <div class="server-header">
+                    <h2 class="server-name">web-01</h2>
+                    <div>
+                        <span class="server-status status-online">
+                            <span class="status-pulse" style="background: #3BA55D;"></span>
+                            Online
+                        </span>
+                        <i class="fas fa-sync-alt refresh-btn ml-3" onclick="refreshServer('web-01')"></i>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <!-- CPU -->
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">CPU Usage</span>
+                            <span class="metric-value cpu-text">35%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-cpu cpu-bar" style="width: 35%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Memory -->
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">Memory Usage</span>
+                            <span class="metric-value memory-text">58%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-memory memory-bar" style="width: 58%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Disk -->
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">Disk Usage</span>
+                            <span class="metric-value disk-text">42%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-disk disk-bar" style="width: 42%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="last-updated">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span class="last-update">2023-11-15 14:32:45</span>
+                </div>
+            </div>
+
+            <!-- Repeat for other servers (db-01, cache-01) -->
+            <div class="server-card" data-server="db-01">
+                <div class="server-header">
+                    <h2 class="server-name">db-01</h2>
+                    <div>
+                        <span class="server-status status-online">
+                            <span class="status-pulse" style="background: #3BA55D;"></span>
+                            Online
+                        </span>
+                        <i class="fas fa-sync-alt refresh-btn ml-3" onclick="refreshServer('db-01')"></i>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">CPU Usage</span>
+                            <span class="metric-value cpu-text">22%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-cpu cpu-bar" style="width: 22%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">Memory Usage</span>
+                            <span class="metric-value memory-text">68%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-memory memory-bar" style="width: 68%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">Disk Usage</span>
+                            <span class="metric-value disk-text">39%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-disk disk-bar" style="width: 39%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="last-updated">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span class="last-update">2023-11-15 14:32:45</span>
+                </div>
+            </div>
+
+            <div class="server-card" data-server="cache-01">
+                <div class="server-header">
+                    <h2 class="server-name">cache-01</h2>
+                    <div>
+                        <span class="server-status status-online">
+                            <span class="status-pulse" style="background: #3BA55D;"></span>
+                            Online
+                        </span>
+                        <i class="fas fa-sync-alt refresh-btn ml-3" onclick="refreshServer('cache-01')"></i>
+                    </div>
+                </div>
+
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">CPU Usage</span>
+                            <span class="metric-value cpu-text">15%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-cpu cpu-bar" style="width: 15%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">Memory Usage</span>
+                            <span class="metric-value memory-text">32%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-memory memory-bar" style="width: 32%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metric">
+                        <div class="metric-header">
+                            <span class="metric-label">Disk Usage</span>
+                            <span class="metric-value disk-text">25%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill progress-disk disk-bar" style="width: 25%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="last-updated">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span class="last-update">2023-11-15 14:32:45</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Scroll animations
+        const animateOnScroll = (elements) => {
+            elements.forEach(el => {
+                gsap.to(el, {
+                    scrollTrigger: {
+                        trigger: el,
+                        start: "top 80%",
+                        toggleActions: "play none none none"
+                    },
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    ease: "power2.out"
+                });
+            });
+        };
+
+        // Animate sections
+        document.addEventListener('DOMContentLoaded', () => {
+            animateOnScroll(document.querySelectorAll('.stat-card'));
+            animateOnScroll(document.querySelectorAll('.server-card'));
+        });
+
+        const servers = [
+            {
+                name: 'web-01',
+                isOnline: true,
+                metrics: {
+                    cpu_percent: 35,
+                    memory_percent: 58,
+                    disk_percent: 42
+                },
+                lastUpdate: new Date()
+            },
+            {
+                name: 'db-01',
+                isOnline: true,
+                metrics: {
+                    cpu_percent: 22,
+                    memory_percent: 68,
+                    disk_percent: 39
+                },
+                lastUpdate: new Date()
+            },
+            {
+                name: 'cache-01',
+                isOnline: true,
+                metrics: {
+                    cpu_percent: 15,
+                    memory_percent: 32,
+                    disk_percent: 25
+                },
+                lastUpdate: new Date()
+            }
+        ];
+
+        function calculateAverages() {
+            const onlineServers = servers.filter(s => s.isOnline);
+            const avgCpu = onlineServers.reduce((sum, s) => sum + s.metrics.cpu_percent, 0) / onlineServers.length;
+            const avgMemory = onlineServers.reduce((sum, s) => sum + s.metrics.memory_percent, 0) / onlineServers.length;
+            
+            document.querySelector('.avg-cpu').textContent = `${Math.round(avgCpu)}%`;
+            document.querySelector('.avg-memory').textContent = `${Math.round(avgMemory)}%`;
+            document.querySelector('[data-server-count]').textContent = `${onlineServers.length}/${servers.length}`;
+        }
+        
+        function refreshServer(serverName) {
+            const button = document.querySelector(`[data-server="${serverName}"] .refresh-btn`);
+            button.classList.add('fa-spin');
+            
+            // Simulate API call
+            setTimeout(() => {
+                const server = servers.find(s => s.name === serverName);
+                // Update with new mock data
+                server.metrics = {
+                    cpu_percent: Math.min(Math.round(Math.random() * 100), 95),
+                    memory_percent: Math.min(Math.round(Math.random() * 100), 95),
+                    disk_percent: Math.min(Math.round(Math.random() * 100), 95),
+                    lastUpdate: new Date()
+                };
+                server.isOnline = Math.random() > 0.1;
+                
+                updateMetricsDisplay(document.querySelector(`[data-server="${serverName}"]`), server);
+                calculateAverages();
+                button.classList.remove('fa-spin');
+            }, 800);
+        }
+
+        function updateMetricsDisplay(element, data) {
+            // Update status indicator
+            const statusIndicator = element.querySelector('.server-status');
+            const statusPulse = element.querySelector('.status-pulse');
+            if (statusIndicator && statusPulse) {
+                if (data.isOnline) {
+                    statusIndicator.className = 'server-status status-online';
+                    statusPulse.style.backgroundColor = '#3BA55D';
+                    statusIndicator.innerHTML = `<span class="status-pulse"></span> Online`;
+                } else {
+                    statusIndicator.className = 'server-status status-offline';
+                    statusPulse.style.backgroundColor = '#ED4245';
+                    statusIndicator.innerHTML = `<span class="status-pulse"></span> Offline`;
+                }
+            }
+
+            // Update CPU metrics
+            const cpuBar = element.querySelector('.cpu-bar');
+            const cpuText = element.querySelector('.cpu-text');
+            if (cpuBar && cpuText) {
+                const cpuPercent = data.metrics.cpu_percent || 1;
+                cpuBar.style.width = `${cpuPercent}%`;
+                cpuBar.className = `progress-fill progress-cpu ${cpuPercent > 80 ? 'progress-critical' : ''}`;
+                cpuText.textContent = `${Math.round(cpuPercent)}%`;
+                cpuText.style.color = cpuPercent > 80 ? '#ED4245' : 'var(--text)';
+            }
+
+            // Update Memory metrics
+            const memoryBar = element.querySelector('.memory-bar');
+            const memoryText = element.querySelector('.memory-text');
+            if (memoryBar && memoryText) {
+                const memoryPercent = data.metrics.memory_percent || 1;
+                memoryBar.style.width = `${memoryPercent}%`;
+                memoryBar.className = `progress-fill progress-memory ${memoryPercent > 80 ? 'progress-critical' : ''}`;
+                memoryText.textContent = `${Math.round(memoryPercent)}%`;
+                memoryText.style.color = memoryPercent > 80 ? '#ED4245' : 'var(--text)';
+            }
+
+            // Update Disk metrics
+            const diskBar = element.querySelector('.disk-bar');
+            const diskText = element.querySelector('.disk-text');
+            if (diskBar && diskText) {
+                const diskPercent = data.metrics.disk_percent || 1;
+                diskBar.style.width = `${diskPercent}%`;
+                diskBar.className = `progress-fill progress-disk ${diskPercent > 80 ? 'progress-critical' : ''}`;
+                diskText.textContent = `${Math.round(diskPercent)}%`;
+                diskText.style.color = diskPercent > 80 ? '#ED4245' : 'var(--text)';
+            }
+
+            // Update timestamp
+            const lastUpdate = element.querySelector('.last-update');
+            if (lastUpdate) {
+                lastUpdate.textContent = new Date(data.lastUpdate).toLocaleString();
+            }
+        }
+
+        // Set up automatic refresh for all servers
+        setInterval(() => {
+            servers.forEach(server => refreshServer(server.name));
+        }, 5000);
+
+        // Initialize display
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.server-card').forEach(card => {
+                const serverName = card.dataset.server;
+                const server = servers.find(s => s.name === serverName);
+                if (server) {
+                    updateMetricsDisplay(card, server);
+                }
+            });
+            calculateAverages();
+        });
+    </script>
+</body>
+</html>

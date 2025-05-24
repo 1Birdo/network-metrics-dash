@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NestMonitor</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --github: #24292e;
+            --google: #EA4335;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #FFFFFF;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+            --glass: rgba(43, 45, 49, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 1rem;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355,100%,93%,0.15) 0px, transparent 50%);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .auth-box {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 3rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .brand-logo {
+            width: 64px;
+            height: 64px;
+            background: var(--gradient);
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .auth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .auth-btn:hover::after {
+            left: 100%;
+        }
+
+        .google-btn { 
+            background: var(--google);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .github-btn { 
+            background: var(--github);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .toggle-auth {
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(88, 101, 242, 0.1);
+            color: var(--text);
+            border-radius: var(--radius);
+            text-decoration: none;
+            display: block;
+            margin-top: 1rem;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(88, 101, 242, 0.2);
+        }
+
+        .toggle-auth:hover {
+            background: rgba(88, 101, 242, 0.2);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider::before {
+            margin-right: 1rem;
+        }
+
+        .divider::after {
+            margin-left: 1rem;
+        }
+
+        .email-form {
+            display: none; /* Hidden by default */
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            .auth-box { padding: 2rem; }
+            .brand-logo { width: 48px; height: 48px; font-size: 1.5rem; }
+            h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </a>
+
+            <div class="brand">
+                <div class="brand-logo">NM</div>
+                <h2>Welcome to NestMonitor</h2>
+                <p class="subtitle">Sign in to access your network monitoring dashboard</p>
+            </div>
+
+            <a href="/auth/google" class="auth-btn google-btn" aria-label="Sign in with Google">
+                <i class="fab fa-google"></i>
+                Continue with Google
+            </a>
+
+            <a href="/auth/github" class="auth-btn github-btn" aria-label="Sign in with GitHub">
+                <i class="fab fa-github"></i>
+                Continue with GitHub
+            </a>
+
+            <div class="divider">or</div>
+
+            <div class="email-form">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </div>
+        <a href="/auth/signup" class="toggle-auth">Don't have an account? Sign up</a>
+    </div>
+
+    <script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Initial animation
+        gsap.to('.auth-container', {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: 'power3.out',
+            delay: 0.2
+        });
+
+        // Logo animation
+        const logo = document.querySelector('.brand-logo');
+        gsap.to(logo, {
+            rotationY: 360,
+            duration: 1.5,
+            ease: 'power2.inOut',
+            delay: 0.5
+        });
+
+        // Button hover effects
+        document.querySelectorAll('.auth-btn').forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                gsap.to(btn, {
+                    scale: 1.02,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+            });
+        });
+
+        // Toggle between login/signup
+        const toggleLink = document.querySelector('.toggle-auth');
+        toggleLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const isLogin = window.location.pathname.includes('login');
+            window.location.href = isLogin ? '/auth/signup' : '/auth/login';
+        });
+
+        // Form submission
+        const form = document.getElementById('loginForm');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const submitBtn = form.querySelector('button[type="submit"]');
+                gsap.to(submitBtn, {
+                    scale: 0.95,
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: 1
+                });
+                // Add your form submission logic here
+            });
+        }
+
+        // Toggle email form (optional - can be enabled if needed)
+        const emailToggle = document.createElement('div');
+        emailToggle.innerHTML = '<a href="#" class="toggle-email" style="display: block; text-align: center; margin-top: 1rem; color: var(--primary); text-decoration: none;">Sign in with email</a>';
+        document.querySelector('.auth-box').appendChild(emailToggle);
+        
+        const emailForm = document.querySelector('.email-form');
+        const toggleEmail = document.querySelector('.toggle-email');
+        if (toggleEmail) {
+            toggleEmail.addEventListener('click', (e) => {
+                e.preventDefault();
+                emailForm.style.display = emailForm.style.display === 'none' ? 'block' : 'none';
+                gsap.from(emailForm, {
+                    opacity: 0,
+                    y: 20,
+                    duration: 0.5
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMonitor | Enterprise Network Monitoring & Infrastructure Management</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5865F2; /* Discord blue */
+            --primary-dark: #4752C4;
+            --primary-darker: #3A45B5;
+            --surface: #2B2D31;
+            --surface-secondary: #313338;
+            --surface-tertiary: #383A40;
+            --background: #1E1F22;
+            --background-dark: #111214;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --text-tertiary: #949BA4;
+            --border: #404249;
+            --border-light: #4E5058;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 15px rgba(0, 0, 0, 0.3);
+            --shadow-primary: 0 5px 15px rgba(88, 101, 242, 0.3);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045D6 100%);
+            --glass: rgba(46, 48, 54, 0.6);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cta-buttons a {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background-dark);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355, 100%, 93%, 0.1) 0px, transparent 50%);
+            overflow-x: hidden;
+        }
+
+        /* Enhanced Navigation */
+        .navbar {
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.25rem;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-brand-logo {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient);
+            border-radius: var(--radius);
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow-primary);
+            transition: var(--transition);
+        }
+
+        .nav-brand:hover .nav-brand-logo {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.primary {
+            background: var(--gradient);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            font-weight: 600;
+            box-shadow: var(--shadow-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(88, 101, 242, 0.4);
+            background: var(--primary-dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 12rem 5% 6rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(88, 101, 242, 0.15) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 2rem;
+            line-height: 1.15;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1.5px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            font-size: 1.25rem;
+            line-height: 1.75;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 4rem;
+        }
+
+        /* Trust Badges */
+        .trust-section {
+            margin: 4rem auto;
+            padding: 2.5rem;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            max-width: 1200px;
+            border: 1px solid var(--border);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .trust-title {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .trust-logos {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .trust-logo {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 50%;
+            filter: grayscale(100%) brightness(0.8);
+            transition: var(--transition);
+            padding: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .trust-logo:hover {
+            transform: scale(1.1);
+            filter: grayscale(0%) brightness(1.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dashboard Preview */
+        .dashboard-preview {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            padding: 3rem;
+            margin: 6rem auto;
+            box-shadow: var(--shadow-lg);
+            max-width: 1440px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .dashboard-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(88, 101, 242, 0.05) 0%, transparent 100%);
+            z-index: -1;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .preview-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-primary);
+            border-color: rgba(88, 101, 242, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .metric-trend {
+            font-size: 1rem;
+            color: #3BA55D; /* Discord green */
+            background: rgba(59, 165, 93, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .metric-trend.down {
+            color: #ED4245; /* Discord red */
+            background: rgba(237, 66, 69, 0.1);
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* Network Graph Visualization */
+        .network-graph {
+            width: 100%;
+            height: 400px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .graph-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .graph-node {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid rgba(88, 101, 242, 0.3);
+            z-index: 2;
+            transform: translate(-50%, -50%);
+        }
+
+        .server-node {
+            width: 20px;
+            height: 20px;
+            background: #8045D6;
+            border: 3px solid rgba(128, 69, 214, 0.3);
+        }
+
+        .graph-connection {
+            position: absolute;
+            height: 2px;
+            background: rgba(88, 101, 242, 0.3);
+            transform-origin: left center;
+            z-index: 1;
+        }
+
+        .data-packet {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #3BA55D;
+            border-radius: 50%;
+            z-index: 3;
+            filter: drop-shadow(0 0 4px rgba(59, 165, 93, 0.7));
+            transform: translate(-50%, -50%);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+            background: var(--background);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .features::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(88, 101, 242, 0.1) 0%, transparent 30%);
+            z-index: 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            max-width: 1440px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-card {
+            padding: 2.5rem 2rem;
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-primary);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-primary);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Enhanced CTA */
+        .cta-section {
+            text-align: center;
+            padding: 6rem 5%;
+            background: var(--gradient);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgZmlsbD0idXJsKCNwYXR0ZXJuKSIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIvPjwvc3ZnPg==');
+            opacity: 0.3;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-section p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 3rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: var(--primary);
+            padding: 1rem 2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--background-dark);
+            color: white;
+            padding: 4rem 5%;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        .footer-section h4 {
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1.1rem;
+        }
+
+        .footer-section p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .footer-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .footer-bottom {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-items {
+                display: none;
+            }
+            
+            .hero {
+                padding: 10rem 5% 4rem;
+            }
+            
+            .metric-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .trust-logos {
+                gap: 1.5rem;
+            }
+            
+            .trust-logo {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .network-graph {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+        <div class="nav-brand-logo">NM</div>
+        NestMonitor
+    </a>
+    <div class="nav-items">
+        <a href="/" class="nav-link">Home</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="/pricing" class="nav-link">Pricing</a>
+        <a href="/support" class="nav-link">Support</a>
+        <a href="/docs" class="nav-link">Resources</a>
+        <a href="/demo" class="nav-link primary">Try Demo</a>
+        <a href="/auth/signup" class="nav-link primary">Get Started</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+        <h1>Enterprise Network Monitoring, Simplified</h1>
+        <p>Monitor your network infrastructure with real-time analytics, custom SDK integrations, and actionable insights for optimal performance and security.</p>
+        
+        <div class="cta-buttons">
+            <a href="/auth/signup" class="nav-link primary">Start For Free <i class="fas fa-arrow-right"></i></a>
+            <a href="/demo" class="nav-link primary">Try Our Demo</a>
+        </div>
+
+        <div class="trust-section">
+            <div class="trust-title">Trusted by industry leaders</div>
+            <div class="trust-logos">
+                <img src="https://fastly.picsum.photos/id/880/200/200.jpg?hmac=g5VV-eqqKk9TdTvkzKu6PzjRtzrqVhrj6v7H9ZT7PDo" class="trust-logo" alt="Fortune 500">
+                <img src="https://fastly.picsum.photos/id/244/200/200.jpg?hmac=Q1gdvE6ZPZUX3nXkxvmzuc12eKVZ9XVEmSH3nCJ2OOo" class="trust-logo" alt="Tech Leader">
+                <img src="https://fastly.picsum.photos/id/937/120/120.jpg?hmac=KW66MGnQOvj6jaxXATtqPgOywZVqZgrBnjzri62Oqyg" class="trust-logo" alt="Global Bank">
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2>Powerful Features</h2>
+            <p>Comprehensive network monitoring tools designed for enterprise needs</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Real-Time Monitoring</h3>
+                <p>Track network performance metrics in real-time with custom SDK integrations and get instant alerts for anomalies.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-network-wired"></i></div>
+                <h3>Custom SDK Support</h3>
+                <p>Integrate with your existing infrastructure using our flexible SDK with support for multiple programming languages.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Actionable Insights</h3>
+                <p>Get detailed reports and alerts to optimize network performance with AI-powered recommendations.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-preview">
+        <div class="preview-header">
+            <h2 class="preview-title">Live Network Dashboard</h2>
+            <a href="/demo" class="nav-link primary">Explore Full Dashboard</a>
+        </div>
+        <div class="metric-grid">
+            <div class="metric-card">
+                <div class="metric-value">98.7% <span class="metric-trend"><i class="fas fa-arrow-up"></i> 2.3%</span></div>
+                <div class="metric-label">Network Uptime (Last 24h)</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">42ms <span class="metric-trend"><i class="fas fa-arrow-down"></i> 1.5%</span></div>
+                <div class="metric-label">Average Latency</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">1.2TB <span class="metric-trend"><i class="fas fa-arrow-up"></i> 5.8%</span></div>
+                <div class="metric-label">Data Processed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">0 <span class="metric-trend">0%</span></div>
+                <div class="metric-label">Critical Alerts</div>
+            </div>
+        </div>
+        <div class="network-graph">
+            <div class="graph-container" id="networkGraph"></div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Transform Your Network Management</h2>
+            <p>Join hundreds of enterprises monitoring their networks with NestMonitor's platform, featuring real-time data and custom integrations.</p>
+            <a href="/auth/signup" class="cta-button">Get Started Free <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-section">
+            <h4>NestMonitor</h4>
+            <p>Enterprise network monitoring platform providing observability and security for modern infrastructure.</p>
+            <div class="footer-links">
+                <a href="mailto:support@nestmonitor.com" class="footer-link"><i class="fas fa-envelope"></i> admin@birdo.uk</a>
+                <a href="tel:+18005551234" class="footer-link"><i class="fas fa-phone"></i> +44 (800) 1234-1234</a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Solutions</h4>
+            <div class="footer-links">
+                <a href="/cloud-monitoring" class="footer-link"><i class="fas fa-cloud"></i> Cloud Monitoring</a>
+                <a href="/network-security" class="footer-link"><i class="fas fa-lock"></i> Network Security</a>
+                <a href="https://dashboard.birdo.uk/docs" class="footer-link"><i class="fas fa-code"></i> API Monitoring</a>
+                <a href="/tos-aup" class="footer-link"><i class="fas fa-file-alt"></i> ToS & AUP</a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Resources</h4>
+            <div class="footer-links">
+                <a href="/docs" class="footer-link"><i class="fas fa-book"></i> Documentation</a>
+                <a href="https://blog.birdo.uk/" class="footer-link"><i class="fas fa-newspaper"></i> Blog</a>
+                <a href="/demo" class="footer-link"><i class="fas fa-heartbeat"></i> Demo</a>
+                <a href="https://birdo.uk/" class="footer-link"><i class="fa-solid fa-sitemap"></i> Developers Site</a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h4>Connect</h4>
+            <div class="footer-links">
+                <a href="https://x.com/1Birdo_" class="footer-link"><i class="fab fa-twitter"></i> Twitter</a>
+                <a href="https://github.com/Birdo1221" class="footer-link"><i class="fab fa-github"></i> GitHub</a>
+                <a href="/support#contact" class="footer-link"><i class="fas fa-headset"></i> Contact Support</a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 NestMonitor. All rights reserved. | <a href="/tos-aup" class="footer-link">Privacy Policy</a> | <a href="/tos-aup" class="footer-link">Terms of Service</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize GSAP ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Hero animations
+    gsap.from(".hero h1", {
+        duration: 1,
+        y: 30,
+        opacity: 0,
+        ease: "power2.out"
+    });
+
+    gsap.from(".hero p", {
+        duration: 1,
+        y: 30,
+        opacity: 0,
+        delay: 0.2,
+        ease: "power2.out"
+    });
+
+
+    gsap.to(".cta-buttons a", {
+        duration: 0.5,
+        y: 0,
+        opacity: 1,
+        visibility: "visible",
+        delay: 0.7,
+        stagger: 0.1,
+        ease: "back.out(0.3)"
+    });
+
+    // Scroll animations
+    const animateOnScroll = (elements) => {
+        elements.forEach(el => {
+            gsap.to(el, {
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+    };
+
+    // Animate sections
+    animateOnScroll(document.querySelectorAll('.trust-section'));
+    animateOnScroll(document.querySelectorAll('.feature-card'));
+    animateOnScroll(document.querySelectorAll('.metric-card'));
+    animateOnScroll(document.querySelectorAll('.dashboard-preview'));
+
+    // Enhanced Network Graph
+    function createNetworkGraph() {
+        const container = document.getElementById('networkGraph');
+        if (!container) return;
+        
+        // Clear previous content
+        container.innerHTML = '';
+        
+        // Configuration
+        const width = container.offsetWidth;
+        const height = container.offsetHeight;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = Math.min(width, height) * 0.35;
+        
+        // Create server nodes (larger and purple)
+        const serverNodes = [];
+        const serverCount = 2;
+        
+        for (let i = 0; i < serverCount; i++) {
+            const angle = (i / serverCount) * Math.PI * 2;
+            const x = centerX + Math.cos(angle) * radius * 0.5;
+            const y = centerY + Math.sin(angle) * radius * 0.5;
+            
+            const node = document.createElement('div');
+            node.className = 'graph-node server-node';
+            node.style.left = `${x}px`;
+            node.style.top = `${y}px`;
+            container.appendChild(node);
+            
+            serverNodes.push({ x, y, element: node });
+        }
+
+        // Create regular nodes
+        const nodes = [];
+        const nodeCount = 6;
+        
+        for (let i = 0; i < nodeCount; i++) {
+            const angle = (i / nodeCount) * Math.PI * 2;
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            
+            const node = document.createElement('div');
+            node.className = 'graph-node';
+            node.style.left = `${x}px`;
+            node.style.top = `${y}px`;
+            container.appendChild(node);
+            
+            nodes.push({ x, y, element: node });
+        }
+
+        // Create connections
+        function createConnection(node1, node2) {
+            const line = document.createElement('div');
+            line.className = 'graph-connection';
+            
+            const length = Math.sqrt(Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2));
+            const angle = Math.atan2(node2.y - node1.y, node2.x - node1.x) * 180 / Math.PI;
+            
+            line.style.width = `${length}px`;
+            line.style.left = `${node1.x}px`;
+            line.style.top = `${node1.y}px`;
+            line.style.transform = `rotate(${angle}deg)`;
+            
+            container.appendChild(line);
+        }
+
+        // Connect each regular node to nearest server
+        nodes.forEach(node => {
+            const closestServer = serverNodes.reduce((prev, curr) => {
+                const prevDist = Math.sqrt(Math.pow(node.x - prev.x, 2) + Math.pow(node.y - prev.y, 2));
+                const currDist = Math.sqrt(Math.pow(node.x - curr.x, 2) + Math.pow(node.y - curr.y, 2));
+                return currDist < prevDist ? curr : prev;
+            });
+            
+            createConnection(node, closestServer);
+        });
+
+        // Connect servers to each other
+        createConnection(serverNodes[0], serverNodes[1]);
+
+        // Create some random connections between regular nodes
+        for (let i = 0; i < Math.floor(nodeCount / 2); i++) {
+            const node1 = nodes[Math.floor(Math.random() * nodes.length)];
+            const node2 = nodes[Math.floor(Math.random() * nodes.length)];
+            if (node1 !== node2) {
+                createConnection(node1, node2);
+            }
+        }
+
+        // Create data packets animation
+        function createDataPacket(startNode, endNode) {
+            const packet = document.createElement('div');
+            packet.className = 'data-packet';
+            packet.style.left = `${startNode.x}px`;
+            packet.style.top = `${startNode.y}px`;
+            container.appendChild(packet);
+            
+            // Animate along path
+            gsap.to(packet, {
+                x: endNode.x - startNode.x,
+                y: endNode.y - startNode.y,
+                duration: 3,
+                ease: "none",
+                onComplete: () => {
+                    packet.remove();
+                }
+            });
+            
+            // Pulsing effect
+            gsap.to(packet, {
+                scale: 1.5,
+                duration: 0.3,
+                yoyo: true,
+                repeat: 1,
+                ease: "power1.inOut"
+            });
+        }
+
+        // Start animations
+        function animateDataPackets() {
+            // Animate between servers
+            createDataPacket(serverNodes[0], serverNodes[1]);
+            
+            // Animate from servers to random nodes
+            setTimeout(() => {
+                serverNodes.forEach(server => {
+                    const randomNode = nodes[Math.floor(Math.random() * nodes.length)];
+                    createDataPacket(server, randomNode);
+                });
+            }, 500);
+            
+            // Animate between random nodes
+            setTimeout(() => {
+                for (let i = 0; i < 2; i++) {
+                    const node1 = nodes[Math.floor(Math.random() * nodes.length)];
+                    const node2 = nodes[Math.floor(Math.random() * nodes.length)];
+                    if (node1 !== node2) {
+                        createDataPacket(node1, node2);
+                    }
+                }
+            }, 1000);
+        }
+
+        // Initial animation
+        animateDataPackets();
+        
+        // Continuous animation
+        const animationInterval = setInterval(animateDataPackets, 3000);
+        
+        // Cleanup on window resize
+        window.addEventListener('resize', function handleResize() {
+            clearInterval(animationInterval);
+            createNetworkGraph();
+        });
+    }
+
+    // Initialize network graph when page loads
+    window.addEventListener('load', createNetworkGraph);
+    
+    // Add hover effect to cards
+    document.querySelectorAll('.feature-card, .metric-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            gsap.to(card, {
+                duration: 0.3,
+                scale: 1.02,
+                ease: "power2.out"
+            });
+        });
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                duration: 0.3,
+                scale: 1,
+                ease: "power2.out"
+            });
+        });
+    });
+  </script>
+</body>
+</html>

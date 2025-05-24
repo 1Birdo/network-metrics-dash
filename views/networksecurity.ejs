@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Security | NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --glass: rgba(32, 34, 37, 0.6);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+            --critical: #ED4245;
+            --warning: #FEE75C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .gradient-text {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hover-grow {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hover-grow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .security-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .critical {
+            background-color: var(--critical);
+            color: white;
+        }
+
+        .warning {
+            background-color: var(--warning);
+            color: #1E1F22;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            z-index: 50;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 40;
+            padding: 1rem 5%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg">NM</div>
+                <span class="text-xl font-bold text-white">NestMonitor</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/dashboard" class="text-text-secondary hover:text-white transition-colors">Dashboard</a>
+                <a href="/cloud-monitoring" class="text-text-secondary hover:text-white transition-colors">Monitoring</a>
+                <a href="/network-security" class="text-white font-medium">Security</a>
+                <a href="/settings" class="text-text-secondary hover:text-white transition-colors">Settings</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        <!-- Page Header -->
+        <header class="mb-12">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold gradient-text mb-3">Network Security</h1>
+                    <p class="text-text-secondary max-w-3xl">Protect your infrastructure with advanced threat detection</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="security-badge critical">3 CRITICAL</span>
+                    <span class="security-badge warning">5 WARNINGS</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-32 space-y-6">
+                    <div class="glass-card rounded-xl p-6 border border-border/10">
+                        <nav class="space-y-2">
+                            <a href="#threats" class="flex items-center space-x-3 p-3 rounded-lg bg-primary/10 text-primary">
+                                <i class="fas fa-shield-alt text-sm"></i>
+                                <span>Threat Detection</span>
+                            </a>
+                            <a href="#encryption" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-lock text-sm"></i>
+                                <span>Data Encryption</span>
+                            </a>
+                            <a href="#compliance" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                                <i class="fas fa-file-contract text-sm"></i>
+                                <span>Compliance</span>
+                            </a>
+                        </nav>
+                    </div>
+
+                    <!-- Security Status -->
+                    <div class="glass-card rounded-xl p-6 border border-border/10">
+                        <h3 class="font-medium mb-4 flex items-center">
+                            <i class="fas fa-shield-virus text-green-400 mr-2"></i>
+                            Security Status
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-text-secondary">Firewall</span>
+                                <span class="text-green-400 font-mono text-sm">ACTIVE</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-text-secondary">IDS/IPS</span>
+                                <span class="text-green-400 font-mono text-sm">ENABLED</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-text-secondary">Last Scan</span>
+                                <span class="font-mono text-sm">2h ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="lg:col-span-4 space-y-8">
+                <!-- Threat Detection Section -->
+                <section id="threats" class="glass-card rounded-xl p-8 hover-grow">
+                    <div class="flex items-center space-x-4 mb-8">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-white">Threat Detection</h2>
+                            <p class="text-text-secondary">AI-powered security monitoring</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <h3 class="text-xl font-semibold">Real-time Intrusion Detection</h3>
+                        <p class="text-text-secondary">
+                            Behavioral analysis of network traffic with automated vulnerability scanning:
+                        </p>
+                        <ul class="list-disc pl-6 space-y-3 text-text-secondary marker:text-primary">
+                            <li>Anomaly detection across all network layers</li>
+                            <li>Automated threat response protocols</li>
+                            <li>SIEM system integration</li>
+                        </ul>
+
+                        <!-- Security Alerts -->
+                        <div class="mt-6 bg-surface/70 rounded-xl p-6 border border-red-400/30">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-red-400 flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    Active Security Alerts
+                                </h3>
+                                <span class="text-xs text-red-400">Last 24 hours</span>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="p-4 bg-red-500/10 rounded-lg border border-red-400/30">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-medium">Suspicious Outbound Traffic</h4>
+                                            <p class="text-sm text-text-secondary">From 192.168.1.45 to external IP</p>
+                                        </div>
+                                        <span class="text-xs security-badge critical">CRITICAL</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-yellow-500/10 rounded-lg border border-yellow-400/30">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-medium">Multiple Failed Logins</h4>
+                                            <p class="text-sm text-text-secondary">From 89.203.142.x</p>
+                                        </div>
+                                        <span class="text-xs security-badge warning">WARNING</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Encryption Section -->
+                <section id="encryption" class="glass-card rounded-xl p-8 hover-grow">
+                    <div class="flex items-center space-x-4 mb-8">
+                        <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl md:text-3xl font-bold text-white">Data Encryption</h2>
+                            <p class="text-text-secondary">End-to-end protection standards</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-surface/70 p-6 rounded-xl border border-border/10 hover-grow">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h3 class="font-semibold mb-2">TLS 1.3 Encryption</h3>
+                                    <p class="text-sm text-text-secondary">All external communications</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <div class="flex items-center justify-between text-sm mb-2">
+                                    <span class="text-text-secondary">Strength</span>
+                                    <span class="font-mono text-green-400">A+</span>
+                                </div>
+                                <div class="w-full bg-surface rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full w-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-surface/70 p-6 rounded-xl border border-border/10 hover-grow">
+                            <div class="flex justify-between">
+                                <div>
+                                    <h3 class="font-semibold mb-2">At-Rest Encryption</h3>
+                                    <p class="text-sm text-text-secondary">AES-256 database protection</p>
+                                </div>
+                                <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <div class="flex items-center justify-between text-sm mb-2">
+                                    <span class="text-text-secondary">Coverage</span>
+                                    <span class="font-mono text-blue-400">100%</span>
+                                </div>
+                                <div class="w-full bg-surface rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full w-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Progress Bar Animation
+        gsap.to("#progress-bar", {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                scrub: 0.3,
+                start: "top top",
+                end: "bottom bottom"
+            }
+        });
+
+        // Section Animations
+        gsap.utils.toArray("section").forEach((section, i) => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Sidebar Link Active State
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.glass-card nav a').forEach(link => {
+                        link.classList.remove('bg-primary/10', 'text-primary');
+                        if (`#${entry.target.id}` === link.getAttribute('href')) {
+                            link.classList.add('bg-primary/10', 'text-primary');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+        // Simulate real-time security alerts
+        function simulateAlerts() {
+            const alertsContainer = document.querySelector('.bg-surface\\/70.rounded-xl');
+            const newAlert = document.createElement('div');
+            newAlert.className = 'p-4 bg-yellow-500/10 rounded-lg border border-yellow-400/30 mt-2 animate-pulse';
+            newAlert.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="font-medium">New Port Scan Detected</h4>
+                        <p class="text-sm text-text-secondary">From 203.0.113.42</p>
+                    </div>
+                    <span class="text-xs security-badge warning">WARNING</span>
+                </div>
+            `;
+            alertsContainer.insertBefore(newAlert, alertsContainer.firstChild);
+            
+            // Remove animation after first cycle
+            setTimeout(() => {
+                newAlert.classList.remove('animate-pulse');
+            }, 1000);
+        }
+
+        // Simulate every 30 seconds for demo purposes
+        setInterval(simulateAlerts, 30000);
+    </script>
+</body>
+</html>

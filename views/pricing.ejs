@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NestMonitor | Pricing Plans</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #FFFFFF;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+            --glass: rgba(43, 45, 49, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--background);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 80% 0%, hsla(189,100%,56%,0.15) 0px, transparent 50%),
+                radial-gradient(at 0% 50%, hsla(355,100%,93%,0.15) 0px, transparent 50%);
+        }
+
+        /* Glassmorphism effect */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .navbar {
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.25rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .nav-brand-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-items {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.primary {
+            background: var(--gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+        }
+
+        .nav-link.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
+        }
+        
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12rem 5% 6rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(88, 101, 242, 0.3);
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        .pricing-section {
+            margin: 4rem auto;
+            padding: 0 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+        }
+
+        .pricing-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border-color: rgba(88, 101, 242, 0.3);
+        }
+
+        .pricing-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .plan-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .plan-features li {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: #3BA55D;
+            font-weight: bold;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient);
+            color: white;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+            width: 100%;
+            text-align: center;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.4);
+        }
+
+        .popular {
+            position: relative;
+            border: 1px solid rgba(88, 101, 242, 0.3);
+            background: rgba(88, 101, 242, 0.1);
+        }
+
+        .popular-badge {
+            position: static;
+            right: 20px;
+            background: var(--gradient);
+            color: #fff;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 20px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .footer {
+            background: var(--surface);
+            color: white;
+            padding: 2rem 5%;
+            text-align: center;
+            margin-top: 6rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .nav-items {
+                display: none;
+            }
+            
+            .hero {
+                padding: 10rem 5% 4rem;
+            }
+            
+            .pricing-section {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+        }
+
+        /* Floating animation for cards */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <div class="nav-brand-logo">NM</div>
+            NestMonitor
+        </a>
+        <div class="nav-items">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/#features" class="nav-link">Features</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/support" class="nav-link">Support</a>
+            <a href="/docs" class="nav-link">Resources</a>
+            <a href="/demo" class="nav-link primary">Try Demo</a>
+            <a href="/auth/signup" class="nav-link primary">Account Portal</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Simple, Transparent Pricing</h1>
+        <p>Choose a plan that fits your network monitoring needs. All plans include API access and real-time analytics.</p>
+    </section>
+
+    <section class="pricing-section">
+        <div class="pricing-card floating" style="animation-delay: 0s;">
+            <div class="plan-header">
+                <h3 class="plan-title">Starter</h3>
+                <p class="plan-price">Free <span>forever</span></p>
+            </div>
+            <ul class="plan-features">
+                <li>5 Server Monitoring</li>
+                <li>1,000 API Requests/Month</li>
+                <li>Basic Email Alerts</li>
+                <li>24h Data Retention</li>
+                <li>Community Forum Support</li>
+            </ul>
+            <a href="/auth/signup" class="cta-button">Start Free →</a>
+        </div>
+    
+        <div class="pricing-card popular floating" style="animation-delay: 0.5s;">
+            <div class="popular-badge">Most Popular</div>
+            <div class="plan-header">
+                <h3 class="plan-title">Professional</h3>
+                <p class="plan-price">$4.57<span>/month</span></p>
+            </div>
+            <ul class="plan-features">
+                <li>15 Server Monitoring</li>
+                <li>50K API Requests/Month</li>
+                <li>Real-time Alerts (Email+Webhook)</li>
+                <li>7-Day Data History</li>
+                <li>Priority Email Support</li>
+                <li>Basic Analytics Dashboard</li>
+            </ul>
+            <a href="/auth/signup" class="cta-button">Get Started →</a>
+        </div>
+    
+        <div class="pricing-card floating" style="animation-delay: 1s;">
+            <div class="plan-header">
+                <h3 class="plan-title">Enterprise</h3>
+                <p class="plan-price">$9.79<span>/month</span></p>
+            </div>
+            <ul class="plan-features">
+                <li>100 Server Monitoring</li>
+                <li>500K API Requests/Month</li>
+                <li>Multi-channel Alerts (SMS+Slack)</li>
+                <li>30-Day Data History</li>
+                <li>Advanced Performance Analytics</li>
+                <li>24/7 Priority Support</li>
+            </ul>
+            <a href="/demo" class="cta-button">Try Free Demo →</a>
+        </div>
+    
+        <div class="pricing-card floating" style="animation-delay: 1.5s;">
+            <div class="plan-header">
+                <h3 class="plan-title">Custom</h3>
+                <p class="plan-price">Tailored</p>
+            </div>
+            <ul class="plan-features">
+                <li>Unlimited Monitoring</li>
+                <li>Custom API Limits</li>
+                <li>Dedicated Account Manager</li>
+                <li>Custom Integration Support</li>
+                <li>Enterprise-grade Security</li>
+            </ul>
+            <a href="/support#Contact" class="cta-button">Schedule Call →</a>
+        </div>
+    </section>
+
+    <footer class="footer glass-card">
+        <p>&copy; 2025 NestMonitor. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Floating animation for pricing cards
+        gsap.utils.toArray(".pricing-card").forEach((card, i) => {
+            gsap.from(card, {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top bottom-=100",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // Hero animation
+        gsap.from(".hero h1", {
+            y: -30,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out"
+        });
+
+        gsap.from(".hero p", {
+            y: 20,
+            opacity: 0,
+            duration: 1,
+            delay: 0.3,
+            ease: "power3.out"
+        });
+
+        // Hover effects for pricing cards
+        document.querySelectorAll('.pricing-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                gsap.to(card, {
+                    y: -10,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, {
+                    y: 0,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        // Button hover effects
+        document.querySelectorAll('.cta-button').forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                gsap.to(button, {
+                    y: -2,
+                    duration: 0.2,
+                    ease: "power2.out"
+                });
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                gsap.to(button, {
+                    y: 0,
+                    duration: 0.2,
+                    ease: "power2.out"
+                });
+            });
+        });
+    </script>
+</body>
+</html>

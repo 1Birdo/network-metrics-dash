@@ -1,0 +1,329 @@
+<!-- admin-dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --glass: rgba(32, 34, 37, 0.6);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .gradient-border {
+            position: relative;
+            background: var(--gradient);
+            padding: 1px;
+            border-radius: var(--radius);
+        }
+
+        .gradient-border > div {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .hover-grow {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hover-grow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            z-index: 50;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 40;
+            padding: 1rem 5%;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg">NM</div>
+                <span class="text-xl font-bold text-white">NestMonitor</span>
+            </a>
+            <div class="flex items-center space-x-6">
+                <a href="/admin/users" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                    <i class="fas fa-users text-sm"></i>
+                    <span>Users</span>
+                </a>
+                <a href="/admin/api-keys" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                    <i class="fas fa-key text-sm"></i>
+                    <span>API Keys</span>
+                </a>
+                <a href="/dashboard" class="flex items-center space-x-2 bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-server"></i>
+                    <span>Server Dashboard</span>
+                </a>
+                <a href="/logout" class="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        <!-- Stats Grid -->
+        <div class="dashboard-grid mb-8">
+            <!-- Total Users Card -->
+            <div class="gradient-border hover-grow">
+                <div class="flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-text-secondary mb-1">Total Users</p>
+                            <p class="text-3xl font-bold text-white">
+                                <%= userStats.total_users %>
+                            </p>
+                        </div>
+                        <i class="fas fa-users text-4xl text-primary"></i>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="bg-green-500/10 text-green-400 px-2 py-1 rounded-full flex items-center">
+                            <i class="fas fa-arrow-up mr-1"></i><%= userStats.new_users_30d %> new
+                        </span>
+                        <span class="ml-2 text-text-secondary text-sm">last 30 days</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Users Card -->
+            <div class="gradient-border hover-grow">
+                <div class="flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-text-secondary mb-1">Active Users</p>
+                            <p class="text-3xl font-bold text-white">
+                                <%= userStats.active_users_7d %>
+                            </p>
+                        </div>
+                        <div class="relative w-16 h-16">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-full h-full absolute rounded-full bg-surface/50"></div>
+                                <div class="absolute rounded-full inset-1.5 bg-surface"></div>
+                                <span class="relative z-10 text-sm">
+                                    <%= Math.round((userStats.active_users_7d / userStats.total_users) * 100) %>%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-sm text-text-secondary flex items-center">
+                        <i class="fas fa-chart-line mr-2"></i>Last 7 days
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Card -->
+            <div class="gradient-border hover-grow">
+                <div class="flex flex-col justify-between">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-text-secondary mb-1">Monthly Revenue</p>
+                            <p class="text-3xl font-bold text-white">
+                                $<%= totalRevenue.toFixed(2) %>
+                            </p>
+                        </div>
+                        <i class="fas fa-chart-pie text-4xl text-primary"></i>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm">
+                        <span class="bg-green-500/10 text-green-400 px-2 py-1 rounded-full flex items-center">
+                            <i class="fas fa-arrow-up mr-1"></i>
+                            <% const revenueChange = ((totalRevenue - (totalRevenue / 1.12)) / (totalRevenue / 1.12) * 100).toFixed(1); %>
+                            <%= revenueChange %>%
+                        </span>
+                        <span class="ml-2 text-text-secondary text-sm">vs last month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Subscription Plans -->
+            <div class="glass-card rounded-xl p-6 hover-grow">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-semibold text-white">
+                        Subscription Plans
+                    </h2>
+                </div>
+                <div class="grid grid-cols-1 gap-4">
+                    <% subscriptionStats.forEach((plan) => { %>
+                    <div class="flex items-center justify-between p-4 bg-surface/50 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white"><%= plan.plan_name %></p>
+                                <p class="text-sm text-text-secondary"><%= plan.total_subscriptions %> subscriptions</p>
+                            </div>
+                        </div>
+                        <span class="text-lg font-semibold text-primary">
+                            $<%= plan.monthly_revenue %>
+                        </span>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <!-- API Usage Chart -->
+            <div class="glass-card rounded-xl p-6 hover-grow">
+                <h2 class="text-lg font-semibold text-white mb-6">
+                    API Usage Last 30 Days
+                </h2>
+                <div class="relative h-64">
+                    <canvas id="apiUsageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Breakdown -->
+        <div class="glass-card rounded-xl p-6 mb-8 hover-grow">
+            <h2 class="text-lg font-semibold text-white mb-6">
+                Revenue Breakdown
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <% subscriptionStats.forEach((plan) => { %>
+                <div class="text-center p-4 bg-surface/50 rounded-lg">
+                    <p class="text-sm text-text-secondary mb-1"><%= plan.plan_name %></p>
+                    <p class="text-xl font-semibold text-primary">
+                        $<%= plan.monthly_revenue %>
+                    </p>
+                    <p class="text-sm text-text-secondary mt-1">
+                        <% const percentage = ((plan.monthly_revenue / totalRevenue) * 100).toFixed(1); %>
+                        <%= percentage %>%
+                    </p>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Progress Bar Animation
+        gsap.to("#progress-bar", {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                scrub: 0.3,
+                start: "top top",
+                end: "bottom bottom"
+            }
+        });
+
+        // Card Animations
+        gsap.utils.toArray(".gradient-border, .glass-card").forEach((card, i) => {
+            gsap.from(card, {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                delay: i * 0.1,
+                ease: "back.out(1.2)"
+            });
+        });
+
+        // Initialize Chart
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('apiUsageChart').getContext('2d');
+            const apiData = {
+                labels: <%- JSON.stringify(apiUsageStats.map(d => new Date(d.day).toLocaleDateString())) %>,
+                datasets: [{
+                    label: 'API Calls',
+                    data: <%- JSON.stringify(apiUsageStats.map(d => d.api_calls)) %>,
+                    borderColor: '#5865F2',
+                    backgroundColor: 'rgba(88, 101, 242, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'line',
+                data: apiData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#B5BAC1' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#B5BAC1' }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

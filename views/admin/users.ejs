@@ -1,0 +1,269 @@
+<!-- users.ejs -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Management | NestMonitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5865F2;
+            --primary-dark: #4752C4;
+            --surface: #2B2D31;
+            --background: #1E1F22;
+            --text: #F2F3F5;
+            --text-secondary: #B5BAC1;
+            --border: #3F4248;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --glass: rgba(32, 34, 37, 0.6);
+            --gradient: linear-gradient(135deg, #5865F2 0%, #8045DD 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .hover-grow {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hover-grow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-table-row {
+            transition: all 0.2s ease;
+        }
+
+        .user-table-row:hover {
+            background: var(--surface);
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            z-index: 50;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 40;
+            padding: 1rem 5%;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .status-active {
+            background-color: rgba(74, 222, 128, 0.1);
+            color: #4ADE80;
+        }
+
+        .status-suspended {
+            background-color: rgba(248, 113, 113, 0.1);
+            color: #F87171;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold text-lg">NM</div>
+                <span class="text-xl font-bold text-white">NestMonitor</span>
+            </a>
+            <div class="flex items-center space-x-6">
+                <a href="/admin" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                    <i class="fas fa-tachometer-alt text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/admin/users" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary/10 text-primary">
+                    <i class="fas fa-users text-sm"></i>
+                    <span>Users</span>
+                </a>
+                <a href="/admin/api-keys" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-surface/50 text-text-secondary hover:text-white transition-colors">
+                    <i class="fas fa-key text-sm"></i>
+                    <span>API Keys</span>
+                </a>
+                <a href="/logout" class="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+        <!-- Search and Filters -->
+        <div class="mb-8 flex justify-between items-center">
+            <form method="GET" action="/admin/users" class="flex-1 max-w-md">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="<%= search %>"
+                        placeholder="Search users..." 
+                        class="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-surface focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                    <i class="fas fa-search absolute left-3 top-2.5 text-text-secondary"></i>
+                </div>
+            </form>
+        </div>
+
+        <!-- Users Table -->
+        <div class="glass-card rounded-xl overflow-hidden hover-grow">
+            <table class="w-full">
+                <thead class="bg-surface/50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Registered</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Last Login</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border/10">
+                    <% users.forEach(user => { %>
+                    <tr class="user-table-row">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-purple-600 text-white flex items-center justify-center">
+                                    <%= user.name.charAt(0).toUpperCase() %>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-white"><%= user.name %></div>
+                                    <div class="text-sm text-text-secondary flex items-center space-x-2">
+                                        <span><%= user.email %></span>
+                                        <% if(user.google_id) { %>
+                                            <i class="fab fa-google text-blue-400" title="Google Sign-In"></i>
+                                        <% } %>
+                                        <% if(user.github_id) { %>
+                                            <i class="fab fa-github text-white" title="GitHub Sign-In"></i>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-text-secondary">
+                            <%= new Date(user.created_at).toLocaleDateString() %>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-text-secondary">
+                            <%= user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never' %>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="status-badge <%= user.account_status === 'active' ? 'status-active' : 'status-suspended' %>">
+                                <%= user.account_status %>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right text-sm font-medium">
+                            <div class="flex justify-end space-x-4">
+                                <% if(user.role !== 'admin') { %>
+                                <form method="POST" action="/admin/users/promote">
+                                    <input type="hidden" name="userId" value="<%= user.id %>">
+                                    <button type="submit" class="text-primary hover:text-primary-dark transition-colors">
+                                        Promote to Admin
+                                    </button>
+                                </form>
+                                <% } %>
+                                <form method="POST" action="/admin/users/update-status">
+                                    <input type="hidden" name="userId" value="<%= user.id %>">
+                                    <input type="hidden" name="status" value="<%= user.account_status === 'active' ? 'suspended' : 'active' %>">
+                                    <button type="submit" class="text-red-400 hover:text-red-300 transition-colors">
+                                        <%= user.account_status === 'active' ? 'Suspend' : 'Activate' %>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="px-6 py-4 border-t border-border/10">
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-text-secondary">
+                        Showing <%= (currentPage - 1) * limit + 1 %> to <%= Math.min(currentPage * limit, totalUsers) %> of <%= totalUsers %> users
+                    </div>
+                    <div class="flex space-x-2">
+                        <% if(currentPage > 1) { %>
+                        <a href="/admin/users?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
+                           class="px-3 py-1 rounded-lg bg-surface border border-border hover:bg-surface/50 transition-colors">
+                            Previous
+                        </a>
+                        <% } %>
+                        
+                        <% if(currentPage < totalPages) { %>
+                        <a href="/admin/users?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                           class="px-3 py-1 rounded-lg bg-surface border border-border hover:bg-surface/50 transition-colors">
+                            Next
+                        </a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Register GSAP Plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Progress Bar Animation
+        gsap.to("#progress-bar", {
+            scaleX: 1,
+            ease: "none",
+            scrollTrigger: {
+                scrub: 0.3,
+                start: "top top",
+                end: "bottom bottom"
+            }
+        });
+
+        // Content Animation
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.from(".glass-card", {
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                ease: "back.out(1.2)"
+            });
+        });
+    </script>
+</body>
+</html>
