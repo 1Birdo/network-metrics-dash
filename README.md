@@ -9,20 +9,6 @@ A comprehensive dashboard application providing real-time analytics, monitoring,
 
 Visit the live dashboard at: **[dashboard.birdo.uk](https://dashboard.birdo.uk)**
 
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [API Documentation](#api-documentation)
-- [Contributing](#contributing)
-- [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
-- [License](#license)
-- [Support](#support)
-
 ## ✨ Features
 
 - **Real-time Data Visualization** - Interactive charts and graphs with live updates
