@@ -5,7 +5,11 @@
 
 A comprehensive dashboard application providing real-time analytics, monitoring, and data visualization capabilities.
 
+The submission includes only the website's frontend. No backend services or infrastructure configuration have been implemented.
+
 ## 🚀 Live Demo
+
+Only the frontend of the website is provided. There is no backend functionality or infrastructure setup included.
 
 Visit the live dashboard at: **[dashboard.birdo.uk](https://dashboard.birdo.uk)**
 
